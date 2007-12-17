@@ -6,6 +6,17 @@ Moq is intended to be simple to use, strong typed (no magic strings!) and theref
 = Examples =
 
 {{{
+// ShouldExpectCallReturn
+var mock = new Mock<ICloneable>();
+var clone = new object();
+
+mock.Expect(x => x.Clone()).Returns(clone);
+
+Assert.AreEqual(clone, mock.Value.Clone());
+}}}
+
+{{{
+// ShouldExpectCallWithArgument
 var mock = new Mock<IFoo>();
 
 mock.Expect(x => x.DoInt(1)).Returns(11);
@@ -16,6 +27,7 @@ Assert.AreEqual(22, mock.Value.DoInt(2));
 }}}
 
 {{{
+// ShouldExpectCallWithReferenceLazyEvaluate
 int a = 25;
 var mock = new Mock<IFoo>();
 mock.Expect(x => x.DoArgument(a.ToString())).Returns(() => a);
@@ -25,6 +37,7 @@ Assert.AreEqual(10, mock.Value.DoArgument("10"));
 }}}
 
 {{{
+// ShouldExpectReturnPropertyValue
 var mock = new Mock<IFoo>();
 
 mock.Expect(x => x.ValueProperty).Returns(25);
@@ -33,6 +46,7 @@ Assert.AreEqual(25, mock.Value.ValueProperty);
 }}}
 
 {{{
+// ShouldExpectMethodCallWithVariable
 int value = 5;
 var mock = new Mock<IFoo>();
 
@@ -42,6 +56,7 @@ Assert.AreEqual(value * 2, mock.Value.Duplicate(value));
 }}}
 
 {{{
+// ShouldMatchAnyArgument
 var mock = new Mock<IFoo>();
 
 mock.Expect(x => x.Duplicate(It.IsAny<int>())).Returns(() => 5);
@@ -51,6 +66,7 @@ Assert.AreEqual(5, mock.Value.Duplicate(25));
 }}}
 
 {{{
+// ShouldMatchPredicateArgument
 var mock = new Mock<IFoo>();
 
 mock.
@@ -62,6 +78,7 @@ Assert.AreEqual(0, mock.Value.Duplicate(0));
 }}}
 
 {{{
+// ShouldExpectCallWithoutReturnValue
 var mock = new Mock<IFoo>();
 
 mock.Expect(x => x.Execute());
@@ -70,6 +87,7 @@ mock.Value.Execute();
 }}}
 
 {{{
+// ShouldThrowIfExpectingThrows
 var mock = new Mock<IFoo>();
 
 mock.Expect(x => x.Do1()).Throws(new FormatException());
@@ -78,6 +96,7 @@ mock.Value.Do1();
 }}}
 
 {{{
+// ShouldExecuteCallbackWhenVoidMethodIsCalled
 var mock = new Mock<IFoo>();
 bool called = false;
 mock.Expect(x => x.Execute()).Callback(() => called = true);
@@ -87,6 +106,7 @@ Assert.IsTrue(called);
 }}}
 
 {{{
+// ShouldExecuteCallbackWhenNonVoidMethodIsCalled
 var mock = new Mock<IFoo>();
 bool called = false;
 mock.Expect(x => x.Do1()).Callback(() => called = true).Returns(1);
@@ -96,6 +116,7 @@ Assert.IsTrue(called);
 }}}
 
 {{{
+// ShouldExpectRanges
 var mock = new Mock<IFoo>();
 
 mock.Expect(x => x.DoInt(It.IsInRange(1, 5, Range.Inclusive))).Returns(1);
