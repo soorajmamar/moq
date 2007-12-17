@@ -1,0 +1,18 @@
+= Introduction to Moq =
+
+Moq is intended to be simple to use, strong typed (no magic strings!) and therefore full compiler-verified and refactoring-friendly.
+
+
+= Examples =
+
+{{{
+var mock = new Mock<IFoo>();
+
+mock.Expect(x => x.DoInt(1)).Returns(11);
+mock.Expect(x => x.DoInt(2)).Returns(22);
+
+Assert.AreEqual(11, mock.Value.DoInt(1));
+Assert.AreEqual(22, mock.Value.DoInt(2));
+}}}
+
+*Note*: the required `mock.Value` accessor is a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect]
