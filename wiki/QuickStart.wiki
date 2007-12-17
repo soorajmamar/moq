@@ -69,9 +69,7 @@ Assert.AreEqual(5, mock.Value.Duplicate(25));
 // ShouldMatchPredicateArgument
 var mock = new Mock<IFoo>();
 
-mock.
-	Expect(x => x.Duplicate(It.Is<int>(value => value < 5 && value > 0))).
-	Returns(() => 1);
+mock.Expect(x => x.Duplicate(It.Is<int>(value => value < 5 && value > 0))).Returns(() => 1);
 
 Assert.AreEqual(1, mock.Value.Duplicate(3));
 Assert.AreEqual(0, mock.Value.Duplicate(0));
