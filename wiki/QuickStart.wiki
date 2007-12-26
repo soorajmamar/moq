@@ -1,4 +1,4 @@
-= Introduction to Moq =
+= Introduction to MoQ =
 
 Moq is intended to be simple to use, strong typed (no magic strings!) and therefore full compiler-verified and refactoring-friendly.
 
