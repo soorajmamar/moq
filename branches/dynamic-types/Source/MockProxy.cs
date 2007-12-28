@@ -77,7 +77,7 @@ namespace Moq
 		{
 			if (methodCall.MethodBase == ObjectGetTypeMethod)
 			{
-				Type type = typeof(TInterface);
+				Type type = Moq.Generators.DynamicTypeBuilder.BuildType(typeof(TInterface));
 				return new ReturnMessage(type, null, 0, null, methodCall);
 			}
 			else if (methodCall.MethodBase == ObjectEqualsMethod)

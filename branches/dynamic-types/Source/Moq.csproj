@@ -52,6 +52,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="ExpressionVisitor.cs" />
+    <Compile Include="Generators\DynamicTypeBuilder.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="ICallReturn.cs" />
     <Compile Include="IMatcher.cs" />
