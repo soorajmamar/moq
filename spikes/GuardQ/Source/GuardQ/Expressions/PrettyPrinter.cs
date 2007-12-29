@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace GuardQ.Expressions
 {
@@ -44,7 +45,7 @@ namespace GuardQ.Expressions
         {
             return
                 expression.NodeType == ExpressionType.Constant &&
-                expression.Type.Name.StartsWith("<>");
+                expression.Type.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Length > 0;
         }
     }
 }

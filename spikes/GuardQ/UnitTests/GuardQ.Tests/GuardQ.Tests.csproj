@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="Demo.cs" />
     <Compile Include="GuardQFixture.cs" />
+    <Compile Include="OldGuardDemo\Demo.cs" />
+    <Compile Include="OldGuardDemo\Guard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
