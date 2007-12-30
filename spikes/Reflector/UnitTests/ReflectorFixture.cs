@@ -15,76 +15,76 @@ namespace Reflector.Tests
 		[Test]
 		public void ShouldThrowIfNullMethodLambda()
 		{
-			Reflector<Mock>.GetMethod((Expression<Action<Mock>>)null);
+			Reflect<Mock>.GetMethod((Expression<Action<Mock>>)null);
 		}
 
 		[ExpectedException(typeof(ArgumentNullException))]
 		[Test]
 		public void ShouldThrowIfNullPropertyLambda()
 		{
-			Reflector<Mock>.GetProperty((Expression<Func<Mock, object>>)null);
+			Reflect<Mock>.GetProperty((Expression<Func<Mock, object>>)null);
 		}
 
 		[ExpectedException(typeof(ArgumentNullException))]
 		[Test]
 		public void ShouldThrowIfNullFieldLambda()
 		{
-			Reflector<Mock>.GetField((Expression<Func<Mock, object>>)null);
+			Reflect<Mock>.GetField((Expression<Func<Mock, object>>)null);
 		}
 
 		[ExpectedException(typeof(ArgumentException))]
 		[Test]
 		public void ShouldThrowIfNotMethodLambda()
 		{
-			Reflector<Mock>.GetMethod(x => new object());
+			Reflect<Mock>.GetMethod(x => new object());
 		}
 
 		[ExpectedException(typeof(ArgumentException))]
 		[Test]
 		public void ShouldThrowIfNotPropertyLambda()
 		{
-			Reflector<Mock>.GetProperty(x => x.PublicField);
+			Reflect<Mock>.GetProperty(x => x.PublicField);
 		}
 
 		[ExpectedException(typeof(ArgumentException))]
 		[Test]
 		public void ShouldThrowIfNotFieldLambda()
 		{
-			Reflector<Mock>.GetField(x => x.PublicProperty);
+			Reflect<Mock>.GetField(x => x.PublicProperty);
 		}
 
 		[Test]
 		public void ShouldGetPublicProperty()
 		{
-			PropertyInfo info = Reflector<Mock>.GetProperty(x => x.PublicProperty);
+			PropertyInfo info = Reflect<Mock>.GetProperty(x => x.PublicProperty);
 			Assert.That(info == typeof(Mock).GetProperty("PublicProperty"));
 		}
 
 		[Test]
 		public void ShouldGetPublicField()
 		{
-			FieldInfo info = Reflector<Mock>.GetField(x => x.PublicField);
+			FieldInfo info = Reflect<Mock>.GetField(x => x.PublicField);
 			Assert.That(info == typeof(Mock).GetField("PublicField"));
 		}
 
 		[Test]
 		public void ShouldGetPublicVoidMethod()
 		{
-			MethodInfo info = Reflector<Mock>.GetMethod(x => x.PublicVoidMethod());
+			MethodInfo info = Reflect<Mock>.GetMethod(x => x.PublicVoidMethod());
 			Assert.That(info == typeof(Mock).GetMethod("PublicVoidMethod"));
 		}
 
 		[Test]
 		public void ShouldGetPublicMethodParameterless()
 		{
-			MethodInfo info = Reflector<Mock>.GetMethod(x => x.PublicMethodNoParameters());
+			MethodInfo info = Reflect<Mock>.GetMethod(x => x.PublicMethodNoParameters());
 			Assert.That(info == typeof(Mock).GetMethod("PublicMethodNoParameters"));
 		}
 
 		[Test]
 		public void ShouldGetPublicMethodParameters()
 		{
-			MethodInfo info = Reflector<Mock>.GetMethod<string, int>(
+			MethodInfo info = Reflect<Mock>.GetMethod<string, int>(
 				(x, y, z) => x.PublicMethodParameters(y, z));
 			Assert.That(info == typeof(Mock).GetMethod("PublicMethodParameters", new Type[] { typeof(string), typeof(int) }));
 		}
@@ -92,21 +92,21 @@ namespace Reflector.Tests
 		[Test]
 		public void ShouldGetNonPublicProperty()
 		{
-			PropertyInfo info = Reflector<ReflectorFixture>.GetProperty(x => x.NonPublicProperty);
+			PropertyInfo info = Reflect<ReflectorFixture>.GetProperty(x => x.NonPublicProperty);
 			Assert.That(info == typeof(ReflectorFixture).GetProperty("NonPublicProperty", BindingFlags.Instance | BindingFlags.NonPublic));
 		}
 
 		[Test]
 		public void ShouldGetNonPublicField()
 		{
-			FieldInfo info = Reflector<ReflectorFixture>.GetField(x => x.NonPublicField);
+			FieldInfo info = Reflect<ReflectorFixture>.GetField(x => x.NonPublicField);
 			Assert.That(info == typeof(ReflectorFixture).GetField("NonPublicField", BindingFlags.Instance | BindingFlags.NonPublic));
 		}
 
 		[Test]
 		public void ShouldGetNonPublicMethod()
 		{
-			MethodInfo info = Reflector<ReflectorFixture>.GetMethod(x => x.NonPublicMethod());
+			MethodInfo info = Reflect<ReflectorFixture>.GetMethod(x => x.NonPublicMethod());
 			Assert.That(info == typeof(ReflectorFixture).GetMethod("NonPublicMethod", BindingFlags.Instance | BindingFlags.NonPublic));
 		}
 
