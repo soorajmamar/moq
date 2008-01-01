@@ -10,4 +10,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("0.5.*")]
 [assembly: AssemblyFileVersion("0.5.0.0")]
 
-//[assembly: InternalsVisibleTo("Moq.Tests")]
+[assembly: InternalsVisibleTo("Moq.Tests")]

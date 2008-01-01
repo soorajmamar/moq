@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Castle.DynamicProxy;
 
 namespace Moq
 {
@@ -49,7 +50,20 @@ namespace Moq
 	/// </remarks>
 	public class Mock<TInterface> where TInterface : class
 	{
-		MockProxy<TInterface> proxy = new MockProxy<TInterface>();
+		static readonly ProxyGenerator generator = new ProxyGenerator();
+		Interceptor interceptor = new Interceptor();
+		TInterface instance;
+
+		/// <summary>
+		/// Initializes an instance of the mock.
+		/// </summary>
+		public Mock()
+		{
+			if (typeof(TInterface).IsInterface)
+				instance = generator.CreateInterfaceProxyWithoutTarget<TInterface>(interceptor);
+			else
+				instance = generator.CreateClassProxy<TInterface>(interceptor);
+		}
 
 		/// <summary>
 		/// Exposes the mocked object instance.
@@ -58,7 +72,7 @@ namespace Moq
 		{
 			get
 			{ 
-				return proxy.TransparentProxy;
+				return instance;
 			}
 		}
 
@@ -81,7 +95,7 @@ namespace Moq
 
 			var call = new MethodCallReturn<object>(
 				methodCall.Method, methodCall.Arguments.ToArray());
-			proxy.AddCall(call);
+			interceptor.AddCall(call);
 			return call;
 		}
 
@@ -108,7 +122,7 @@ namespace Moq
 			{
 				var call = new MethodCallReturn<TResult>(
 					methodCall.Method, methodCall.Arguments.ToArray());
-				proxy.AddCall(call);
+				interceptor.AddCall(call);
 				result = call;
 			}
 			else if (propField != null)
@@ -130,7 +144,7 @@ namespace Moq
 					}
 
 					var call = new MethodCallReturn<TResult>(prop.GetGetMethod());
-					proxy.AddCall(call);
+					interceptor.AddCall(call);
 					result = call;
 				}
 				else if (field != null)
