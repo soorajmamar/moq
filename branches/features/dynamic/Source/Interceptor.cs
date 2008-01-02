@@ -40,16 +40,21 @@ namespace Moq
 			else if (invocation.Method != null && invocation.Method.ReturnType != null &&
 				invocation.Method.ReturnType != typeof(void))
 			{
-				List<string> values = new List<string>(invocation.Arguments.Length);
-				// Build arguments
-				invocation.Arguments.ForEach(
-					x => values.Add(x == null ? "null" : (x is string ? "\"" + (string)x + "\"" : x.ToString())));
+				// Return default value.
+				if (invocation.Method.ReturnType.IsValueType)
+					invocation.ReturnValue = 0;
+				else
+					invocation.ReturnValue = null;
+				//List<string> values = new List<string>(invocation.Arguments.Length);
+				//// Build arguments
+				//invocation.Arguments.ForEach(
+				//    x => values.Add(x == null ? "null" : (x is string ? "\"" + (string)x + "\"" : x.ToString())));
 
-				throw new InvalidOperationException(String.Format(
-					Properties.Resources.UndeterminedReturnValue,
-					invocation.Method.DeclaringType.Name,
-					invocation.Method.Name,
-					String.Join(", ", values.ToArray())));
+				//throw new InvalidOperationException(String.Format(
+				//    Properties.Resources.UndeterminedReturnValue,
+				//    invocation.Method.DeclaringType.Name,
+				//    invocation.Method.Name,
+				//    String.Join(", ", values.ToArray())));
 			}
 		}
 	}

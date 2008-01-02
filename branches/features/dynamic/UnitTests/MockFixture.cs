@@ -207,13 +207,16 @@ namespace Moq.Tests
 			mock.Object.Execute();
 		}
 
-		[ExpectedException(typeof(InvalidOperationException))]
 		[Test]
-		public void ShouldThowIfUnexpectedCallWithReturnValue()
+		public void ShouldNotThowIfUnexpectedCallWithReturnValue()
 		{
 			var mock = new Mock<IFoo>();
 
 			int value = mock.Object.DoArgument("foo");
+			string str = mock.Object.Do2();
+
+			Assert.AreEqual(default(int), value);
+			Assert.AreEqual(default(string), str);
 		}
 
 		[ExpectedException(typeof(FormatException))]
@@ -265,15 +268,14 @@ namespace Moq.Tests
 			Assert.AreEqual(2, mock.Object.DoInt(9));
 		}
 
-		[ExpectedException(typeof(InvalidOperationException))]
 		[Test]
-		public void ShouldNotExpectOutOfRange()
+		public void ShouldOutOfRangeReturnsDefault()
 		{
 			var mock = new Mock<IFoo>();
 
 			mock.Expect(x => x.DoInt(It.IsInRange(1, 5, Range.Exclusive))).Returns(1);
 
-			Assert.AreEqual(1, mock.Object.DoInt(1));
+			Assert.AreEqual(default(int), mock.Object.DoInt(1));
 		}
 
 		[Test]
@@ -287,7 +289,6 @@ namespace Moq.Tests
 			Assert.AreEqual(1, mock.Object.DoInt(1));
 		}
 
-		[ExpectedException(typeof(InvalidOperationException))]
 		[Test]
 		public void ShouldExpectRangeLazyEval()
 		{
@@ -301,10 +302,9 @@ namespace Moq.Tests
 
 			from = "c";
 
-			Assert.AreEqual(1, mock.Object.DoArgument("b"));
+			Assert.AreEqual(default(int), mock.Object.DoArgument("b"));
 		}
 
-		[ExpectedException(typeof(InvalidOperationException))]
 		[Test]
 		public void ShouldExpectMatchRegexAndLazyEval()
 		{
@@ -321,7 +321,8 @@ namespace Moq.Tests
 
 			reg = "[c-d]+";
 
-			Assert.AreEqual(1, mock.Object.DoArgument("b"));
+			// Will not match neither the 1 and 2 return values we had.
+			Assert.AreEqual(default(int), mock.Object.DoArgument("b"));
 		}
 
 		[Test]
