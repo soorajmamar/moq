@@ -214,9 +214,11 @@ namespace Moq.Tests
 
 			int value = mock.Object.DoArgument("foo");
 			string str = mock.Object.Do2();
+			AttributeTargets targets = mock.Object.GetTargets();
 
 			Assert.AreEqual(default(int), value);
 			Assert.AreEqual(default(string), str);
+			Assert.AreEqual(default(AttributeTargets), targets);
 		}
 
 		[ExpectedException(typeof(FormatException))]
@@ -477,6 +479,7 @@ namespace Moq.Tests
 			int DoArgument(string arg);
 
 			int Duplicate(int value);
+			AttributeTargets GetTargets();
 
 			void Execute();
 			string Execute(string command);
