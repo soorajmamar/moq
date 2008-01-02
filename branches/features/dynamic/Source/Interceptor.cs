@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Castle.Core.Interceptor;
 using System.Reflection;
+using Castle.Core.Interceptor;
 
 namespace Moq
 {
@@ -30,6 +28,13 @@ namespace Moq
 			}
 			else if (invocation.Method.DeclaringType == typeof(object))
 			{
+				invocation.Proceed();
+			}
+			else if (invocation.TargetType.IsClass &&
+				!invocation.Method.IsAbstract)
+			{
+				// For mocked classes, if the target method was not abstract, 
+				// invoke directly.
 				invocation.Proceed();
 			}
 			else if (invocation.Method != null && invocation.Method.ReturnType != null &&
