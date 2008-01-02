@@ -3,13 +3,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Castle.DynamicProxy;
+using Castle.Core.Interceptor;
 
 namespace Moq
 {
 	/// <summary>
 	/// Provides a mock implementation of <typeparamref name="TInterface"/>.
 	/// </summary>
-	/// <typeparam name="TInterface">Type of the interface to mock.</typeparam>
+	/// <typeparam name="TTarget">Type of the interface to mock.</typeparam>
 	/// <remarks>
 	/// The following example shows setting expectations with specific values 
 	/// for method invocations:
@@ -48,32 +49,51 @@ namespace Moq
 	/// Assert.IsFalse(order.IsFilled);
 	/// </code>
 	/// </remarks>
-	public class Mock<TInterface> where TInterface : class
+	public class Mock<TTarget> where TTarget : class
 	{
 		static readonly ProxyGenerator generator = new ProxyGenerator();
 		Interceptor interceptor = new Interceptor();
-		TInterface instance;
+		TTarget instance;
+		RemotingProxy remotingProxy;
 
 		/// <summary>
 		/// Initializes an instance of the mock.
 		/// </summary>
 		public Mock()
 		{
-			if (typeof(TInterface).IsInterface)
-				instance = generator.CreateInterfaceProxyWithoutTarget<TInterface>(interceptor);
+			if (typeof(MarshalByRefObject).IsAssignableFrom(typeof(TTarget)))
+			{
+				remotingProxy = new RemotingProxy(typeof(TTarget), x => interceptor.Intercept(x));
+				instance = (TTarget)remotingProxy.GetTransparentProxy();
+			}
+			else if (typeof(TTarget).IsInterface)
+			{
+				instance = generator.CreateInterfaceProxyWithoutTarget<TTarget>(interceptor);
+			}
 			else
-				instance = generator.CreateClassProxy<TInterface>(interceptor);
+			{
+				instance = generator.CreateClassProxy<TTarget>(interceptor);
+			}
 		}
 
 		/// <summary>
 		/// Exposes the mocked object instance.
 		/// </summary>
-		public TInterface Object
+		public TTarget Object
 		{
 			get
 			{ 
 				return instance;
 			}
+		}
+
+		/// <summary>
+		/// Called by the <see cref="RemotingProxy"/> when a <see cref="MarshalByRefObject"/> 
+		/// is the target type.
+		/// </summary>
+		internal void Intercept(IInvocation invocation)
+		{
+			interceptor.Intercept(invocation);
 		}
 
 		/// <summary>
@@ -87,7 +107,7 @@ namespace Moq
 		/// mock.Expect(x =&gt; x.Execute("ping"));
 		/// </code>
 		/// </example>
-		public ICall Expect(Expression<Action<TInterface>> expression)
+		public ICall Expect(Expression<Action<TTarget>> expression)
 		{
 			Guard.ArgumentNotNull(expression, "expression");
 
@@ -109,7 +129,7 @@ namespace Moq
 		/// mock.Expect(x =&gt; x.HasInventory("Talisker", 50)).Returns(true);
 		/// </code>
 		/// </example>
-		public ICall<TResult> Expect<TResult>(Expression<Func<TInterface, TResult>> expression)
+		public ICall<TResult> Expect<TResult>(Expression<Func<TTarget, TResult>> expression)
 		{
 			Guard.ArgumentNotNull(expression, "expression");
 

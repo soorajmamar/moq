@@ -16,7 +16,7 @@ namespace Moq.Tests
 		public void ShouldCreateMockAndExposeInterface()
 		{
 			var mock = new Mock<ICloneable>();
-			
+
 			ICloneable cloneable = mock.Object;
 
 			Assert.IsNotNull(cloneable);
@@ -124,7 +124,7 @@ namespace Moq.Tests
 		[Test]
 		public void ShouldThrowIfExpectFieldValue()
 		{
-			var mock = new Mock<Foo>();
+			var mock = new Mock<FooMBRO>();
 
 			mock.Expect(x => x.ValueField);
 		}
@@ -338,7 +338,7 @@ namespace Moq.Tests
 		public void ShouldCallFirstExpectThatMatches()
 		{
 			var mock = new Mock<IFoo>();
-			mock.Expect(x => x.Execute("ping")).Returns("I'm alive!"); 
+			mock.Expect(x => x.Execute("ping")).Returns("I'm alive!");
 			mock.Expect(x => x.Execute(It.IsAny<string>())).Throws(new ArgumentException());
 
 			Assert.AreEqual("I'm alive!", mock.Object.Execute("ping"));
@@ -409,19 +409,62 @@ namespace Moq.Tests
 			Assert.AreEqual(1, mock.Object.GetHashCode());
 		}
 
+		[Test]
+		public void ShouldMockAbstractClass()
+		{
+			var mock = new Mock<FooBase>();
+			mock.Expect(x => x.Check("foo")).Returns(false);
+
+			Assert.IsFalse(mock.Object.Check("foo"));
+			Assert.IsTrue(mock.Object.Check("bar"));
+		}
+
+		[Ignore("Not implemented yet")]
+		[ExpectedException(typeof(ArgumentException))]
+		[Test]
+		public void ShouldThrowIfExpectOnNonVirtual()
+		{
+			var mock = new Mock<FooBase>();
+			mock.Expect(x => x.True()).Returns(false);
+
+			Assert.IsFalse(mock.Object.True());
+		}
+
+		[Test]
+		public void ShouldOverrideNonVirtualForMBRO()
+		{
+			var mock = new Mock<FooMBRO>();
+			mock.Expect(x => x.True()).Returns(false);
+
+			Assert.IsFalse(mock.Object.True());
+		}
+
+		[Test]
+		public void ShouldCallUnderlyingMBRO()
+		{
+			var mock = new Mock<FooMBRO>();
+
+			Assert.IsTrue(mock.Object.True());
+		}
+
+		// ShouldInterceptPropertySetter
+
 		class FooService : IFooService { }
 		interface IFooService { }
-
-		// ShouldAllowDynamicResultThroughFunc
 
 		private int GetToRange()
 		{
 			return 5;
 		}
 
-		public class Foo : MarshalByRefObject
+		public class FooMBRO : MarshalByRefObject
 		{
 			public int ValueField;
+
+			public bool True()
+			{
+				return true;
+			}
 		}
 
 		public interface IFoo
@@ -441,6 +484,21 @@ namespace Moq.Tests
 			int ValueProperty { get; set; }
 			int WriteOnlyValue { set; }
 
+		}
+
+		public abstract class FooBase
+		{
+			public abstract void Do(int value);
+
+			public virtual bool Check(string value)
+			{
+				return true;
+			}
+
+			public bool True()
+			{
+				return true;
+			}
 		}
 	}
 }
