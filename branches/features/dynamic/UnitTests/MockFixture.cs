@@ -450,14 +450,50 @@ namespace Moq.Tests
 			Assert.IsTrue(mock.Object.True());
 		}
 
+		[Test]
+		public void ShouldCallUnderlyingClassEquals()
+		{
+			var mock = new Mock<FooOverrideEquals>();
+			var mock2 = new Mock<FooOverrideEquals>();
+
+			mock.Object.Name = "Foo";
+			mock2.Object.Name = "Foo";
+
+			Assert.IsTrue(mock.Object.Equals(mock2.Object));
+		}
+
+		[ExpectedException(typeof(ArgumentException))]
+		[Test]
+		public void ShouldThrowIfSealedClass()
+		{
+			var mock = new Mock<FooSealed>();
+		}
+
 		// ShouldInterceptPropertySetter
 
+		public sealed class FooSealed { }
 		class FooService : IFooService { }
 		interface IFooService { }
 
 		private int GetToRange()
 		{
 			return 5;
+		}
+
+		public class FooOverrideEquals
+		{
+			public string Name { get; set; }
+
+			public override bool Equals(object obj)
+			{
+				return (obj is FooOverrideEquals) &&
+					((FooOverrideEquals)obj).Name == this.Name;
+			}
+
+			public override int GetHashCode()
+			{
+				return Name.GetHashCode();
+			}
 		}
 
 		public class FooMBRO : MarshalByRefObject
