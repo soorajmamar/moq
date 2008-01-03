@@ -72,7 +72,14 @@ namespace Moq
 			}
 			else
 			{
-				instance = generator.CreateClassProxy<TTarget>(interceptor);
+				try
+				{
+					instance = generator.CreateClassProxy<TTarget>(interceptor);
+				}
+				catch (TypeLoadException tle)
+				{
+					throw new ArgumentException(Properties.Resources.InvalidMockClass, tle);
+				}
 			}
 		}
 
