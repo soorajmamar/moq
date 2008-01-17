@@ -1,6 +1,6 @@
 = Introduction to MoQ =
 
-MoQ is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly), minimalistic and state/classic-testing oriented.
+MoQ is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly), minimalistic and with a slight bias towards state/classic-testing oriented.
 
 
 = Examples =
@@ -129,3 +129,5 @@ Assert.AreEqual(2, mock.Object.DoInt(9));
 }}}
 
 *Note*: the required `mock.Object` accessor is a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
+
+Head on to the [http://www.clariusconsulting.net/labs/moq/index.html API documentation], [http://code.google.com/p/moq/downloads/list download it] and have fun! Engage in the [http://groups.google.com/group/moqdisc discussion group] to give us feedback, share your experiences or wishes for vNext!
