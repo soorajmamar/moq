@@ -1,5 +1,5 @@
 == Version 1.5 =
-  * Added MockFactory to allow easy construction of multiple mocks with the same behavior and verification  
+  * Added [http://www.clariusconsulting.net/labs/moq/html/4C85C26D.htm MockFactory] to allow easy construction of multiple mocks with the same behavior and verification  
 
 == Version 1.4 =
   * Added support for passing constructor arguments for mocked classes.
