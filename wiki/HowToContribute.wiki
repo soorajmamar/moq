@@ -1,0 +1,35 @@
+#labels Featured
+We're very open and accept contributions from Moq enthusiasts. 
+There are basically two ways of contributing: Contributing a Patch, and Joining the Project.
+
+Read the following sections to determine whether you want to contribute as one or the other :)
+
+= Contributing a Patch =
+
+If you just came across a bug which you'd like to fix and contribute back, this is the easiest and less involved way of contributing.
+
+We like the approach outlined in [http://www.instiki.org/show/HowToContribute Instiki]. 
+Scott Hanselman has also a good [http://www.hanselman.com/blog/ExampleHowToContributeAPatchToAnOpenSourceProjectLikeDasBlog.aspx overview of how to contribute] using TortoiseSVN (our favorite SVN client). 
+
+Just make sure you replace the repository URL with ours: http://moq.googlecode.com/svn/trunk/ (see [http://code.google.com/p/moq/source/checkout] for more info)
+
+We will improve these instructions, hopefully.
+
+= Joining the Project =
+
+If you want to be more involved, actively answering questions from users, developing entirely new features (as opposed to a single occasional bug fix), contributing to the wiki, etc., you can join the project. Just send an email to the [mailto:moqdisc@googlegroups.com Moq Discussions] list asking so, as well as a brief summary of why you're interested in doing so and how you'd like to contribute (purely informational, no commitments required ;)).
+
+When you join the project (we'll need your gmail address, which you can send via private email to daniel - at cazzulino, dot com) you'll get a private folder under SVN: https://moq.googlecode.com/svn/branches/private/[your nick here].
+
+From that point on, you can branch the trunk and work on whatever you think might be
+useful for the project :). Communication is open and we encourage everyone to do so through the [mailto:moqdisc@googlegroups.com Moq Discussions] group. Later on, we can discuss features and implementations and see what goes back into the trunk for Moq official releases. 
+
+We also have feature branches, where the feature is agreed up-front (or was already planned), and where multiple devs may be working on it at the same time. This is under https://moq.googlecode.com/svn/branches/features/[feature name].
+
+
+Finally, we'd typically to code walkthroughs when features or impl. is not obvious. For that we can communicate through the discussion group, or alternatively we can chat/talk over skype or google talk. We can share our accounts privately and we encourage everyone to do so.
+
+
+
+
+Thanks for your interest in contributing and happy mocking!
