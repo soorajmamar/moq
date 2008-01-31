@@ -1,3 +1,4 @@
+#labels Featured
 == Version 1.5.1 =
   * Refactored [http://www.clariusconsulting.net/labs/moq/html/4C85C26D.htm MockFactory] to make it simpler and more explicit to use with regards to verification. Thanks [http://www.hanselman.com/forum/messages.aspx?TopicID=161#post556 Garry Shutler] for the feedback!
 
