@@ -93,7 +93,8 @@ namespace Moq
 			if (args == null) args = new object[0];
 
 			this.behavior = behavior;
-			interceptor = new Interceptor(behavior, typeof(T));
+			interceptor = new Interceptor(behavior, typeof(T), this);
+			var interfacesTypes = new Type[] { typeof(IMocked<T>) };
 
 			try
 			{
@@ -108,7 +109,7 @@ namespace Moq
 					if (args.Length > 0)
 						throw new ArgumentException(Properties.Resources.ConstructorArgsForInterface);
 
-					instance = generator.CreateInterfaceProxyWithoutTarget<T>(interceptor);
+					instance = (T) generator.CreateInterfaceProxyWithoutTarget(typeof(T), interfacesTypes, interceptor);
 				}
 				else
 				{
@@ -116,13 +117,13 @@ namespace Moq
 					{
 						if (args.Length > 0)
 						{
-							var generatedType = generator.ProxyBuilder.CreateClassProxy(typeof(T), new ProxyGenerationOptions());
+							var generatedType = generator.ProxyBuilder.CreateClassProxy(typeof(T), interfacesTypes, new ProxyGenerationOptions());
 							instance = (T)Activator.CreateInstance(generatedType,
 								new object[] { new IInterceptor[] { interceptor } }.Concat(args).ToArray());
 						}
 						else
 						{
-							instance = generator.CreateClassProxy<T>(interceptor);
+							instance = (T) generator.CreateClassProxy(typeof(T), interfacesTypes, interceptor);
 						}
 					}
 					catch (TypeLoadException tle)
@@ -375,5 +376,31 @@ namespace Moq
 		//    // TODO: doesn't work as expected but ONLY with interfaces :S
 		//    throw new NotImplementedException();
 		//}
+	}
+
+	/// <summary>
+	/// Mock helper methods.
+	/// </summary>
+	public sealed class Mock
+	{
+		/// <summary>
+		/// if mocked was instantiated from Mock&lt;T&gt;,
+		/// it gets the Mock&lt;T&gt; that manage it.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="mocked"></param>
+		/// <returns></returns>
+		public static Mock<T> Get<T>(T mocked)
+			where T : class
+		{
+			if (mocked is IMocked<T>)
+			{
+				return (mocked as IMocked<T>).Mock;
+			}
+			else
+			{
+				throw new ArgumentException("Not instantiated from MoQ.", "mocked");
+			}
+		}
 	}
 }
