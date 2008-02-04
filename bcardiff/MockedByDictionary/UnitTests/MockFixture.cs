@@ -902,7 +902,7 @@ namespace Moq.Tests
 
 			public override int GetHashCode()
 			{
-				return Name.GetHashCode();
+				return Name == null ? 0 : Name.GetHashCode();
 			}
 		}
 

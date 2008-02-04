@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Castle.DynamicProxy;
 using Castle.Core.Interceptor;
+using System.Collections.Generic;
 
 namespace Moq
 {
@@ -136,6 +137,8 @@ namespace Moq
 			{
 				throw new ArgumentException(Properties.Resources.ConstructorNotFound, mme);
 			}
+
+			Mock.RegisterMock(this, instance);
 		}
 
 		/// <summary>
@@ -375,5 +378,39 @@ namespace Moq
 		//    // TODO: doesn't work as expected but ONLY with interfaces :S
 		//    throw new NotImplementedException();
 		//}
+	}
+
+	/// <summary>
+	/// Mock helper methods.
+	/// </summary>
+	public sealed class Mock
+	{
+		private static IDictionary<object, object> mocks = new Dictionary<object, object>(new ReferenceEqualsComparer());
+
+		internal static void RegisterMock(object mock, object mocked)
+		{
+			mocks.Add(mocked, mock);
+		}
+
+		/// <summary>
+		/// if mocked was instantiated from Mock&lt;T&gt;,
+		/// it gets the Mock&lt;T&gt; that manage it.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="mocked"></param>
+		/// <returns></returns>
+		public static Mock<T> Get<T>(T mocked)
+			where T : class
+		{
+			object mock = null;
+			if (mocks.TryGetValue(mocked, out mock))
+			{
+				return mock as Mock<T>;
+			}
+			else
+			{
+				throw new ArgumentException("Not instantiated from MoQ.", "mocked");
+			}
+		}
 	}
 }
