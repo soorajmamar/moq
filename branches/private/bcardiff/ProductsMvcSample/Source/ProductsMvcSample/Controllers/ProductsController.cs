@@ -32,8 +32,7 @@ namespace ProductsMvcSample.Controllers
 			var model = new ProductsListViewData();
 			model.CategoryId = id;
 			model.CategoryName = catalogService.GetCategoryName(id);
-			model.Products.AddRange(catalogService.GetProducts(id));
-
+			model.Products.AddRange(catalogService.GetProducts(id) ?? new Product[0]);
 			RenderView("ProductsList", model);
 		}
 	}
