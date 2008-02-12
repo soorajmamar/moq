@@ -29,7 +29,7 @@ namespace ProductsMvcSample.Tests.Controllers
 				.Returns(view.Object);
 
 			// Services Mocks
-			var catalogService = new Mock<IProductsCatalogService>();
+			var catalogService = new Mock<IProductsCatalogService>(MockBehavior.Loose);
 
 			// Target object
 			var controller = new ProductsController(catalogService.Object);
@@ -60,7 +60,7 @@ namespace ProductsMvcSample.Tests.Controllers
 				.Returns(view.Object);
 
 			// Services Mocks
-			var catalogService = new Mock<IProductsCatalogService>();
+			var catalogService = new Mock<IProductsCatalogService>(MockBehavior.Loose);
 			catalogService.Expect(x => x
 				.GetCategoryName(2))
 				.Returns("FooCategory");
@@ -101,7 +101,7 @@ namespace ProductsMvcSample.Tests.Controllers
 				.Returns(view.Object);
 
 			// Services Mocks
-			var catalogService = new Mock<IProductsCatalogService>();
+			var catalogService = new Mock<IProductsCatalogService>(MockBehavior.Loose);
 			catalogService.Expect(x => x
 				.GetCategoryName(2))
 				.Returns("FooCategory");
