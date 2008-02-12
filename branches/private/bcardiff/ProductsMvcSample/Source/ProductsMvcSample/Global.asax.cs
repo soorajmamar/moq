@@ -18,22 +18,24 @@ namespace ProductsMvcSample
 		{
 			// Note: Change Url= to Url="[controller].mvc/[action]/[id]" to enable 
 			//       automatic support on IIS6 
+			RegisterRoutes(RouteTable.Routes);
+		}
 
-			RouteTable.Routes.Add(new Route
+		public static void RegisterRoutes(RouteCollection routes)
+		{
+			routes.Add(new Route
 			{
 				Url = "[controller]/[action]/[id]",
 				Defaults = new { action = "Index", id = (string)null },
 				RouteHandler = typeof(MvcRouteHandler)
 			});
 
-			RouteTable.Routes.Add(new Route
+			routes.Add(new Route
 			{
 				Url = "Default.aspx",
 				Defaults = new { controller = "Home", action = "Index", id = (string)null },
 				RouteHandler = typeof(MvcRouteHandler)
 			});
-
-
 		}
 	}
 }

@@ -4,7 +4,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="mainContent" runat="server">
 
 <ul>
-	<li><%= Html.ActionLink("View Category 1", new { controller = "Product" , action = "category" , id = 1 })%></li>
-	<li><%= Html.ActionLink("View Category 2", new { controller = "Product" , action = "category" , id = 2 })%></li>
+	<li><%= Html.ActionLink("View Category 1", new { controller = "Products" , action = "Category" , id = 1 })%></li>
+	<li><%= Html.ActionLink("View Category 2", new { controller = "Products" , action = "Category" , id = 2 })%></li>
 </ul>	
 </asp:Content>
