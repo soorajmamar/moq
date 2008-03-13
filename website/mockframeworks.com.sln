@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mockframeworks.com", "mockframeworks.com", "{40FFE08C-5AEE-4030-8FBD-4D163B6FBB07}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		Debug.AspNetCompiler.VirtualPath = "/mockframeworks.com"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\Code\GoogleCode\Moq\website\mockframeworks.com\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\mockframeworks.com\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/mockframeworks.com"
+		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\Code\GoogleCode\Moq\website\mockframeworks.com\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\mockframeworks.com\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "2606"
+		VWDVirtualPath = "/"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|.NET = Debug|.NET
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40FFE08C-5AEE-4030-8FBD-4D163B6FBB07}.Debug|.NET.ActiveCfg = Debug|.NET
+		{40FFE08C-5AEE-4030-8FBD-4D163B6FBB07}.Debug|.NET.Build.0 = Debug|.NET
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

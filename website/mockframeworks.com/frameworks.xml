@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Mock Frameworks</title>
+    <link>http://www.mockframeworks.com/frameworks.xml</link>
+    <description>Mock Frameworks</description>
+    <item>
+      <guid isPermaLink="false">http://www.mockframeworks.com/moq</guid>
+      <link>http://code.google.com/p/moq</link>
+      <category>.NET</category>
+      <title>Moq</title>
+      <description>Moq</description>
+      <a10:updated>2008-03-11T15:49:30-03:00</a10:updated>
+    </item>
+    <item>
+      <guid isPermaLink="false">http://www.mockframeworks.com/rhino</guid>
+      <link>http://www.ayende.com/projects/rhino-mocks.aspx</link>
+      <category>.NET</category>
+      <title>Rhino</title>
+      <description>Rhino</description>
+      <a10:updated>2008-03-11T16:18:37-03:00</a10:updated>
+    </item>
+  </channel>
+</rss>
