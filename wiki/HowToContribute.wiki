@@ -27,7 +27,7 @@ useful for the project :). Communication is open and we encourage everyone to do
 We also have feature branches, where the feature is agreed up-front (or was already planned), and where multiple devs may be working on it at the same time. This is under https://moq.googlecode.com/svn/branches/features/[feature name].
 
 
-Finally, we'd typically to code walkthroughs when features or impl. is not obvious. For that we can communicate through the discussion group, or alternatively we can chat/talk over skype or google talk. We can share our accounts privately and we encourage everyone to do so.
+Finally, we'd typically do code walkthroughs when features or implementation is not obvious. For that we can communicate through the discussion group, or alternatively we can chat/talk over skype or google talk. We can share our accounts privately and we encourage everyone to do so.
 
 
 
