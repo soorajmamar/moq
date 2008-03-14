@@ -104,3 +104,10 @@ td {
 	padding-bottom:0px;
 	background-position:center;
 }
+
+#asirra_LayoutTable td {
+	border-bottom: none;
+	height:5px;
+	padding:0px;
+	margin:0px;
+}

@@ -16,7 +16,7 @@
 			var panel = document.getElementById("addPanel");
 			var link = document.getElementById("addLibrary");
 			if (panel.style.display == "block")
-			{			
+			{	
 				panel.style.display = "none";
 				link.innerHTML = "+ Add new library";
 			}
@@ -26,6 +26,23 @@
 				link.innerHTML = "- Add new library";
 			}
 		}	
+		
+		function HumanCheckComplete(isHuman)
+		{
+			if (isHuman)
+			{
+				return true;
+				//return WebForm_OnSubmit();
+				//WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions("btnAdd", "", true, "", "", false, false))
+				//var form = document.getElementById("home");
+				//form.submit();
+			}
+			else
+			{
+				alert("Please correctly identify the cats before submitting.");
+				return false;
+			}
+		}		
 	</script>
 
 </head>
@@ -113,12 +130,20 @@
 									<asp:TextBox ID="txtRedirectUrl" Width="255" runat="server"></asp:TextBox>
 								&nbsp;<asp:RequiredFieldValidator ID="redirectUrlValidator" runat="server" 
 										ErrorMessage="Redirect Url is required" ControlToValidate="txtRedirectUrl" Display="None"></asp:RequiredFieldValidator>
+										<asp:RegularExpressionValidator ID="redirectUrlValidValidator" runat="server" 
+										ValidationExpression="(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?"
+										ErrorMessage="Redirect Url is invalid" ControlToValidate="txtRedirectUrl" Display="None" />
 								</td>
 							</tr>
 						</table>
 						<asp:ValidationSummary ID="formValidation" runat="server" />
 						<br />
+						<p><script type="text/javascript" src="http://challenge.asirra.com/js/AsirraClientSide.js"></script></p>
 						<asp:ImageButton ID="btnAdd" runat="server" ImageUrl="~/img/BTNadd.gif" />
+						<a href="#" onclick="javascript:Asirra_CheckIfHuman(HumanCheckComplete)">
+							<img src="img/BTNadd.gif" />
+						</a>
+						<asp:Label CssClass="textRed" Visible="false" ID="validationFailed" runat="server" />
 					</div>
 				</div>
 			</div>
@@ -129,5 +154,14 @@
 				info@clariusconsulting.net</a> | <a href="http://www.clariusconsulting.net">www.clariusconsulting.net</a></div>
 	</div>
 	</form>
+	<script language="javascript" type="text/javascript">
+	var __WebForm_OnSubmit = WebForm_OnSubmit;
+	function WebForm_OnSubmit() 
+	{
+	  if (!Asirra_CheckIfHuman(HumanCheckComplete)) return false;
+	  
+	  return __WebForm_OnSubmit();
+	}		
+	</script>
 </body>
 </html>
