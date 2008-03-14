@@ -13,3 +13,4 @@ RewriteCond %{HTTP_HOST} ^www\.mockframeworks\.net$ [NC]
 RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=302]
 
 RewriteRule ^([^\.]+)$ $1.ashx  [R=302,L,NC]
+RewriteRule ^(.*)default.aspx$ $1  [R=302,L,NC]
