@@ -14,20 +14,20 @@ namespace Moq.Tests
 		[Test]
 		public void ShouldThrowIfNullMatcherType()
 		{
-			new MatcherAttribute(null);
+			new AdvancedMatcherAttribute(null);
 		}
 
 		[ExpectedException(typeof(ArgumentException))]
 		[Test]
 		public void ShouldThrowIfMatcherNotIExpressionMatcher()
 		{
-			MatcherAttribute attr = new MatcherAttribute(typeof(object));
+			AdvancedMatcherAttribute attr = new AdvancedMatcherAttribute(typeof(object));
 		}
 
 		[Test]
 		public void ShouldCreateMatcher()
 		{
-			MatcherAttribute attr = new MatcherAttribute(typeof(MockMatcher));
+			AdvancedMatcherAttribute attr = new AdvancedMatcherAttribute(typeof(MockMatcher));
 			IMatcher matcher = attr.CreateMatcher();
 
 			Assert.IsNotNull(matcher);

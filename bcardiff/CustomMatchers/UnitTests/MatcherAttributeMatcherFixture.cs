@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace Moq.Tests
 {
 	[TestFixture]
-	public class CustomMatcherFixture
+	public class MatcherAttributeMatcherFixture
 	{
 		public interface IFoo
 		{
@@ -46,7 +46,7 @@ namespace Moq.Tests
 
 		static bool IsMagicStringCalled;
 
-		[CustomMatcher]
+		[Matcher]
 		public static string IsMagicString() { return null; }
 		public static bool IsMagicString(string arg)
 		{
@@ -71,7 +71,7 @@ namespace Moq.Tests
 			mock.Object.Bar("no-magic");
 		}
 
-		[CustomMatcher]
+		[Matcher]
 		public static string StartsWith(string prefix) { return null; }
 		public static bool StartsWith(string arg, string prefix)
 		{

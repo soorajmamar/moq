@@ -18,8 +18,8 @@ namespace Moq
 			if (expression.NodeType == ExpressionType.Call)
 			{
 				MethodCallExpression call = (MethodCallExpression)expression;
-				MatcherAttribute attr = call.Method.GetCustomAttribute<MatcherAttribute>(true);
-				CustomMatcherAttribute customAttr = call.Method.GetCustomAttribute<CustomMatcherAttribute>(true);
+				AdvancedMatcherAttribute attr = call.Method.GetCustomAttribute<AdvancedMatcherAttribute>(true);
+				MatcherAttribute customAttr = call.Method.GetCustomAttribute<MatcherAttribute>(true);
 				if (attr != null)
 				{
 					IMatcher matcher = attr.CreateMatcher();
@@ -31,7 +31,7 @@ namespace Moq
 					var expectedParametersTypes = new[] { call.Method.ReturnType }.Concat(call.Method.GetParameters().Select(p => p.ParameterType)).ToArray();
 					var validatorMethod = call.Method.DeclaringType.GetMethod(call.Method.Name, expectedParametersTypes);
 					// TODO throw if validatorMethod doesn't exists
-					IMatcher matcher = new Moq.Matchers.CustomMatcherMatcher(validatorMethod);
+					IMatcher matcher = new Moq.Matchers.MatcherAttributeMatcher(validatorMethod);
 					matcher.Initialize(expression);
 					return matcher;
 				}
