@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomMatcherAttribute.cs" />
+    <Compile Include="MatcherAttribute.cs" />
     <Compile Include="ExpressionExtensions.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Evaluator.cs" />
@@ -75,11 +75,11 @@
     <Compile Include="Language\IThrows.cs" />
     <Compile Include="IVerifiable.cs" />
     <Compile Include="Language\IVerifies.cs" />
-    <Compile Include="MatcherAttribute.cs" />
+    <Compile Include="AdvancedMatcherAttribute.cs" />
     <Compile Include="MatcherFactory.cs" />
     <Compile Include="Matchers\AnyMatcher.cs" />
     <Compile Include="Matchers\ConstantMatcher.cs" />
-    <Compile Include="Matchers\CustomMatcherMatcher.cs" />
+    <Compile Include="Matchers\MatcherAttributeMatcher.cs" />
     <Compile Include="Matchers\RegexMatcher.cs" />
     <Compile Include="Matchers\RangeMatcher.cs" />
     <Compile Include="Matchers\LazyEvalMatcher.cs" />
