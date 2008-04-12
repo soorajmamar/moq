@@ -19,19 +19,16 @@ namespace Moq
 			{
 				MethodCallExpression call = (MethodCallExpression)expression;
 				AdvancedMatcherAttribute attr = call.Method.GetCustomAttribute<AdvancedMatcherAttribute>(true);
-				MatcherAttribute customAttr = call.Method.GetCustomAttribute<MatcherAttribute>(true);
+				MatcherAttribute staticMatcherMethodAttr = call.Method.GetCustomAttribute<MatcherAttribute>(true);
 				if (attr != null)
 				{
 					IMatcher matcher = attr.CreateMatcher();
 					matcher.Initialize(expression);
 					return matcher;
 				}
-				else if (customAttr != null)
+				else if (staticMatcherMethodAttr != null)
 				{
-					var expectedParametersTypes = new[] { call.Method.ReturnType }.Concat(call.Method.GetParameters().Select(p => p.ParameterType)).ToArray();
-					var validatorMethod = call.Method.DeclaringType.GetMethod(call.Method.Name, expectedParametersTypes);
-					// TODO throw if validatorMethod doesn't exists
-					IMatcher matcher = new Moq.Matchers.MatcherAttributeMatcher(validatorMethod);
+					IMatcher matcher = new Moq.Matchers.MatcherAttributeMatcher();
 					matcher.Initialize(expression);
 					return matcher;
 				}
