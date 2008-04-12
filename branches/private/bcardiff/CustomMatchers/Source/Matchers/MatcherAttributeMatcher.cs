@@ -30,14 +30,28 @@ namespace Moq.Matchers
 		MethodInfo validatorMethod;
 		Expression matcherExpression;
 
-		public MatcherAttributeMatcher(MethodInfo validatorMethod)
-		{
-			this.validatorMethod = validatorMethod;
-		}
-
 		public void Initialize(Expression matcherExpression)
 		{
+			this.validatorMethod = ResolveValidatorMethod(matcherExpression);
 			this.matcherExpression = matcherExpression;
+		}
+
+		private MethodInfo ResolveValidatorMethod(Expression expression)
+		{
+			MethodCallExpression call = (MethodCallExpression) expression;
+			var expectedParametersTypes = new[] { call.Method.ReturnType }.Concat(call.Method.GetParameters().Select(p => p.ParameterType)).ToArray();
+			var method = call.Method.DeclaringType.GetMethod(call.Method.Name, expectedParametersTypes);
+			// TODO throw if validatorMethod doesn't exists			
+			if (method == null)
+			{
+				throw new MissingMethodException(string.Format(
+					"public {0}bool {1}({2}) in class {3}.",
+					call.Method.IsStatic ? "static " : string.Empty,
+					call.Method.Name, 
+					string.Join(", ", expectedParametersTypes.Select(x => x.ToString()).ToArray()),
+					call.Method.DeclaringType.ToString()));
+			}
+			return method;
 		}
 
 		public bool Matches(object value)
@@ -46,7 +60,9 @@ namespace Moq.Matchers
 			MethodCallExpression call = (MethodCallExpression)matcherExpression;
 			var extraArgs = call.Arguments.Select(ae => ((ConstantExpression)ae.PartialEval()).Value);
 			var args = new[] { value }.Concat(extraArgs).ToArray();
-			return (bool) validatorMethod.Invoke( null, args );
+			// for static and non-static method
+			var instance = call.Object == null ? null : (call.Object as ConstantExpression).Value;
+			return (bool) validatorMethod.Invoke( instance, args );
 		}
 	}
 }

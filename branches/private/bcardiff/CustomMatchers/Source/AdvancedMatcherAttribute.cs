@@ -4,9 +4,9 @@ using System.Reflection;
 namespace Moq
 {
 	[AttributeUsage(
-		AttributeTargets.Method |
-		AttributeTargets.Field |
-		AttributeTargets.Property, Inherited = true)]
+		AttributeTargets.Method /*|
+		AttributeTargets.Property*/
+		, Inherited = true)]
 	internal class AdvancedMatcherAttribute : Attribute
 	{
 		Type matcherType;
