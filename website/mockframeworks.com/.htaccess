@@ -4,13 +4,13 @@
 RewriteEngine on
 
 RewriteCond %{HTTP_HOST} ^mockframeworks\.com$ [NC]
-RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=302]
+RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=301]
 
 RewriteCond %{HTTP_HOST} ^mockframeworks\.net$ [NC]
-RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=302]
+RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=301]
 
 RewriteCond %{HTTP_HOST} ^www\.mockframeworks\.net$ [NC]
-RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=302]
+RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=301]
 
 RewriteRule ^([^\.]+)$ $1.ashx  [R=302,L,NC]
-RewriteRule ^(.*)default.aspx$ $1  [R=302,L,NC]
+RewriteRule ^(.*)default.aspx$ $1  [R=301,L,NC]
