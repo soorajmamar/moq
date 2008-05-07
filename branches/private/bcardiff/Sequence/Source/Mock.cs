@@ -109,11 +109,39 @@ namespace Moq
 		/// <code>var mock = new Mock&lt;MyProvider&gt;(someArgument, 25);</code>
 		/// </example>
 		public Mock(MockBehavior behavior, params object[] args)
+			: this(behavior, ExpectationPolicy.Override, args)
+		{
+		}
+
+		/// <summary>
+		/// Initializes an instance of the mock with a specific <see cref="MockBehavior">behavior</see>, <see cref="ExpectationPolicy">policy</see> with 
+		/// the given constructor arguments for the class.
+		/// </summary>
+		/// <remarks>
+		/// The mock will try to find the best match constructor given the constructor arguments, and invoke that 
+		/// to initialize the instance. This applies only to classes, not interfaces.
+		/// </remarks>
+		/// <example>
+		/// <code>var mock = new Mock&lt;MyProvider&gt;(someArgument, 25);</code>
+		/// </example>
+		public Mock(MockBehavior behavior, ExpectationPolicy policy, params object[] args)
 		{
 			if (args == null) args = new object[0];
 
 			this.behavior = behavior;
-			interceptor = new Interceptor(behavior, typeof(T), this);
+			IProxyCallRepository calls;
+			switch (policy)
+			{
+				case ExpectationPolicy.Override:
+					calls = new DefaultProxyCallRepository();
+					break;
+				case ExpectationPolicy.NotOverride:
+					calls = new NotOverrideCallRepository();
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+			interceptor = new Interceptor(behavior, typeof(T), this, calls);
 			var interfacesTypes = new Type[] { typeof(IMocked<T>) };
 			var mockType = typeof(T);
 

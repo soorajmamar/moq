@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System;
 
 namespace Moq.Language.Flow
 {
@@ -8,6 +9,12 @@ namespace Moq.Language.Flow
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface IExpect : ICallback, IThrowsOnceVerifiesRaise, IRaise, IHideObjectMembers
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="constraint"></param>
+		/// <returns></returns>
+		IExpect When(Func<bool> constraint);
 	}
 
 	/// <summary>
@@ -16,6 +23,12 @@ namespace Moq.Language.Flow
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface IExpect<TResult> : ICallback<TResult>, IReturnsThrows<TResult>, IHideObjectMembers
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="constraint"></param>
+		/// <returns></returns>
+		IExpect<TResult> When(Func<bool> constraint);
 	}
 
 	/// <summary>

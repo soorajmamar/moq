@@ -104,6 +104,12 @@ namespace Moq
 			return this;
 		}
 
+		public new IExpect<TResult> When(Func<bool> constraint)
+		{
+			base.When(constraint);
+			return this;
+		}
+
 		private void SetReturnDelegate(Delegate valueDel)
 		{
 			if (valueDel == null)

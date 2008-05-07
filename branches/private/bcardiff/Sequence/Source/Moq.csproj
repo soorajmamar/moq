@@ -54,8 +54,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultProxyCallRepository.cs" />
     <Compile Include="DefaultValue.cs" />
+    <Compile Include="ExpectationPolicy.cs" />
     <Compile Include="ExpectKind.cs" />
+    <Compile Include="IProxyCallRepository.cs" />
     <Compile Include="Language\IRaise.cs" />
     <Compile Include="MatcherAttribute.cs" />
     <Compile Include="ExpressionExtensions.cs" />
@@ -98,6 +101,7 @@
     <Compile Include="MockedEvent.cs" />
     <Compile Include="MockException.cs" />
     <Compile Include="MockFactory.cs" />
+    <Compile Include="NotOverrideCallRepository.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
