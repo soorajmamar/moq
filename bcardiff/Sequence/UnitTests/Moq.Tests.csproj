@@ -56,6 +56,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExpectationConstraintsFixture.cs" />
     <Compile Include="MatcherAttributeFixture.cs" />
     <Compile Include="Demo.cs" />
     <Compile Include="ExpressionExtensionsFixture.cs" />
@@ -91,15 +92,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-	<UsingTask
-	  AssemblyFile="$(MSBuildProjectPath)..\Lib\xUnit\xunitext.runner.msbuild.dll"
-	  TaskName="XunitExt.Runner.MSBuild.xunit"/>
-
-	<Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
-		<!-- Run xUnit tests -->
-		<Copy SourceFiles="$(MSBuildProjectPath)..\Lib\xUnit\xunit.dll" DestinationFolder="$(OutDir)"/>
-		<xunit Assembly="@(MainAssembly)" />
-		<Delete Files="$(OutDir)\xunit.dll"/>
-	</Target>
-
+  <UsingTask AssemblyFile="$(MSBuildProjectPath)..\Lib\xUnit\xunitext.runner.msbuild.dll" TaskName="XunitExt.Runner.MSBuild.xunit" />
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
+    <!-- Run xUnit tests -->
+    <Copy SourceFiles="$(MSBuildProjectPath)..\Lib\xUnit\xunit.dll" DestinationFolder="$(OutDir)" />
+    <xunit Assembly="@(MainAssembly)" />
+    <Delete Files="$(OutDir)\xunit.dll" />
+  </Target>
 </Project>

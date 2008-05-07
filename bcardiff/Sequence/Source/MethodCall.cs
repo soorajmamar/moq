@@ -52,6 +52,7 @@ namespace Moq
 		public bool IsVerifiable { get; set; }
 		public bool Invoked { get; set; }
 		public Expression ExpectExpression { get { return originalExpression; } }
+		public Func<bool> Constraint { get; protected set; }
 
 		public IOnceVerifiesRaise Throws(Exception exception)
 		{
@@ -89,6 +90,12 @@ namespace Moq
 			return this;
 		}
 
+		public IExpect When(Func<bool> constraint)
+		{
+			Constraint = constraint;
+			return this;
+		}
+
 		protected void SetCallbackWithArguments(Delegate callback)
 		{
 			this.callback = delegate(object[] args) { callback.InvokePreserveStack(args); };
@@ -110,6 +117,8 @@ namespace Moq
 						return false;
 				}
 
+				if (Constraint != null)
+					return Constraint();
 				return true;
 			}
 

@@ -14,14 +14,15 @@ namespace Moq
 	{
 		MockBehavior behavior;
 		Type targetType;
-		Dictionary<string, IProxyCall> calls = new Dictionary<string, IProxyCall>();
 		Mock mock;
+		IProxyCallRepository calls;
 
-		public Interceptor(MockBehavior behavior, Type targetType, Mock mock)
+		public Interceptor(MockBehavior behavior, Type targetType, Mock mock, IProxyCallRepository calls)
 		{
 			this.behavior = behavior;
 			this.targetType = targetType;
 			this.mock = mock;
+			this.calls = calls;
 		}
 
 		internal void Verify()
@@ -37,7 +38,7 @@ namespace Moq
 		private void VerifyOrThrow(Predicate<IProxyCall> match)
 		{
 			var failures = new List<Expression>();
-			foreach (var call in calls.Values)
+			foreach (var call in calls)
 			{
 				if (match(call))
 					failures.Add(call.ExpectExpression.PartialEval());
@@ -51,10 +52,7 @@ namespace Moq
 
 		public void AddCall(IProxyCall call, ExpectKind kind)
 		{
-			if (kind == ExpectKind.PropertySet)
-				calls["set::" + call.ExpectExpression.ToStringFixed()] = call;
-			else
-				calls[call.ExpectExpression.ToStringFixed()] = call;
+			calls.Add(call, kind);
 		}
 
 		public void Intercept(IInvocation invocation)
@@ -90,7 +88,7 @@ namespace Moq
 				return;
 			}
 
-			var call = (from c in calls.Values
+			var call = (from c in calls
 									where c.Matches(invocation)
 									select c).FirstOrDefault();
 
