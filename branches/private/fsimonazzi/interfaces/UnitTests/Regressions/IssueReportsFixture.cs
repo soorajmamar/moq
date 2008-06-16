@@ -69,7 +69,7 @@ namespace Moq.Tests.Regressions
 			void DoSomething<U>() where U : T;
 		}
 
-		[Fact(Skip="Still failing on Castle.DynamicProxy2")]
+		[Fact(Skip = "Still failing on Castle.DynamicProxy2")]
 		public void CreatesMockWithGenericsConstraints()
 		{
 			var mock = new Mock<ISomething<object>>();
@@ -77,24 +77,31 @@ namespace Moq.Tests.Regressions
 
 		#endregion
 
+
+		// run "netsh http add urlacl url=http://+:7777/ user=[domain]\[user]"
+		// to avoid running the test as an admin
 		[Fact]
 		public void ProxiesAndHostsWCF()
 		{
 			var generator = new Castle.DynamicProxy.ProxyGenerator();
 			var proxy = generator.CreateClassProxy<ServiceImplementation>();
-			var host = new WebServiceHost(proxy, new Uri("http://localhost:7777"));
-
-			host.Open();
+			using (var host = new WebServiceHost(proxy, new Uri("http://localhost:7777")))
+			{
+				host.Open();
+			}
 		}
 
+		// run "netsh http add urlacl url=http://+:7777/ user=[domain]\[user]"
+		// to avoid running the test as an admin
 		[Fact]
 		public void ProxiesAndHostsWCFMock()
 		{
 			//var generator = new Castle.DynamicProxy.ProxyGenerator();
 			var proxy = new Mock<ServiceImplementation>();
-			var host = new WebServiceHost(proxy.Object, new Uri("http://localhost:7777"));
-
-			host.Open();
+			using (var host = new WebServiceHost(proxy.Object, new Uri("http://localhost:7777")))
+			{
+				host.Open();
+			}
 		}
 
 		[ServiceContract]
