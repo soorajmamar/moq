@@ -66,13 +66,15 @@ namespace Moq
 	/// Assert.False(order.IsFilled);
 	/// </code>
 	/// </example>
-	public class Mock<T> : Mock, IVerifiable, IHideObjectMembers
+	public class Mock<T> : Mock, IVerifiable, IHideObjectMembers, ISetExpectations<T>
 		where T : class
 	{
 		static readonly ProxyGenerator generator = new ProxyGenerator();
 		Interceptor interceptor;
 		T instance;
 		MockBehavior behavior;
+		object[] constructorArguments;
+		List<Type> interfacesTypes;
 
 		/// <summary>
 		/// Initializes an instance of the mock with a specific <see cref="MockBehavior">behavior</see> with 
@@ -92,30 +94,53 @@ namespace Moq
 			this.behavior = behavior;
 			interceptor = new Interceptor(behavior, typeof(T), this);
 			var interfacesTypes = new Type[] { typeof(IMocked<T>) };
+			this.constructorArguments = args;
+			this.interfacesTypes = new List<Type> { typeof(IMocked<T>) };
+
+			CheckParameters();
+		}
+
+		private void CheckParameters()
+		{
+			if (typeof(T).IsInterface)
+			{
+				if (this.constructorArguments.Length > 0)
+					throw new ArgumentException(Properties.Resources.ConstructorArgsForInterface);
+			}
+			else
+			{
+				if (!(typeof(T).IsAbstract || !typeof(T).IsSealed))
+				{
+					throw new ArgumentException(Properties.Resources.InvalidMockClass);
+				}
+			}
+		}
+
+		private void InitializeInstance()
+		{
 			var mockType = typeof(T);
 
 			try
 			{
-				if (typeof(T).IsInterface)
+				if (mockType.IsInterface)
 				{
-					if (args.Length > 0)
-						throw new ArgumentException(Properties.Resources.ConstructorArgsForInterface);
-
-					instance = (T)generator.CreateInterfaceProxyWithoutTarget(mockType, interfacesTypes, interceptor);
+					instance
+						= (T)generator.CreateInterfaceProxyWithoutTarget(mockType, interfacesTypes.ToArray(), interceptor);
 				}
 				else
 				{
 					try
 					{
-						if (args.Length > 0)
+						if (constructorArguments.Length > 0)
 						{
-							var generatedType = generator.ProxyBuilder.CreateClassProxy(mockType, interfacesTypes, new ProxyGenerationOptions());
-							instance = (T)Activator.CreateInstance(generatedType,
-								new object[] { new IInterceptor[] { interceptor } }.Concat(args).ToArray());
+							var generatedType = generator.ProxyBuilder.CreateClassProxy(mockType, interfacesTypes.ToArray(), new ProxyGenerationOptions());
+							instance
+								= (T)Activator.CreateInstance(generatedType,
+									new object[] { new IInterceptor[] { interceptor } }.Concat(constructorArguments).ToArray());
 						}
 						else
 						{
-							instance = (T)generator.CreateClassProxy(mockType, interfacesTypes, interceptor);
+							instance = (T)generator.CreateClassProxy(mockType, interfacesTypes.ToArray(), interceptor);
 						}
 					}
 					catch (TypeLoadException tle)
@@ -167,6 +192,11 @@ namespace Moq
 		{
 			get
 			{
+				if (this.instance == null)
+				{
+					InitializeInstance();
+
+				}
 				return instance;
 			}
 		}
@@ -176,7 +206,7 @@ namespace Moq
 		/// </summary>
 		protected override object GetObject()
 		{
-			return instance;
+			return Object;
 		}
 
 		/// <devdoc>
@@ -200,6 +230,11 @@ namespace Moq
 		/// </code>
 		/// </example>
 		public IExpect Expect(Expression<Action<T>> expression)
+		{
+			return SetUpExpect<T>(expression);
+		}
+
+		private IExpect SetUpExpect<T1>(Expression<Action<T1>> expression)
 		{
 			MethodInfo method;
 			Expression[] args;
@@ -229,9 +264,14 @@ namespace Moq
 		/// </example>
 		public IExpect<TResult> Expect<TResult>(Expression<Func<T, TResult>> expression)
 		{
+			return SetUpExpect(expression, this.interceptor);
+		}
+
+		private static IExpect<TResult> SetUpExpect<T1, TResult>(Expression<Func<T1, TResult>> expression, Interceptor interceptor)
+		{
 			MethodInfo method;
 			Expression[] args;
-			GetMethodOrPropertyArguments<TResult>(expression, out method, out args);
+			GetMethodOrPropertyArguments<T1, TResult>(expression, out method, out args);
 
 			ThrowIfCantOverride(expression, method);
 			var call = new MethodCallReturn<TResult>(expression, method, args);
@@ -258,13 +298,18 @@ namespace Moq
 		/// </example>
 		public IExpectGetter<TProperty> ExpectGet<TProperty>(Expression<Func<T, TProperty>> expression)
 		{
+			return SetUpExpectGet(expression, this.interceptor);
+		}
+
+		private static IExpectGetter<TProperty> SetUpExpectGet<T1, TProperty>(Expression<Func<T1, TProperty>> expression, Interceptor interceptor)
+		{
 			Guard.ArgumentNotNull(expression, "expression");
 			LambdaExpression lambda = GetLambda(expression);
 
 			if (IsPropertyIndexer(lambda.Body))
 			{
 				// Treat indexers as regular method invocations.
-				return (IExpectGetter<TProperty>)Expect(expression);
+				return (IExpectGetter<TProperty>)SetUpExpect<T1, TProperty>(expression, interceptor);
 			}
 			else
 			{
@@ -299,6 +344,11 @@ namespace Moq
 		/// </code>
 		/// </example>
 		public IExpectSetter<TProperty> ExpectSet<TProperty>(Expression<Func<T, TProperty>> expression)
+		{
+			return SetUpExpectSet<T, TProperty>(expression, this.interceptor);
+		}
+
+		private static IExpectSetter<TProperty> SetUpExpectSet<T1, TProperty>(Expression<Func<T1, TProperty>> expression, Interceptor interceptor)
 		{
 			var propSet = GetProperySetter(expression);
 			ThrowIfCantOverride(expression, propSet);
@@ -362,7 +412,7 @@ namespace Moq
 		{
 			MethodInfo method;
 			Expression[] args;
-			GetMethodOrPropertyArguments<TResult>(expression, out method, out args);
+			GetMethodOrPropertyArguments<T, TResult>(expression, out method, out args);
 
 			var expected = new MethodCallReturn<TResult>(expression, method, args);
 			var actual = interceptor.ActualCalls.FirstOrDefault(i => expected.Matches(i));
@@ -493,6 +543,31 @@ namespace Moq
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TInterface"></typeparam>
+		/// <returns></returns>
+		public virtual ISetExpectations<TInterface> As<TInterface>()
+			where TInterface : class
+		{
+			if (this.instance != null)
+			{
+				throw new InvalidOperationException();	// TODO specify message
+			}
+			if (!typeof(TInterface).IsInterface)
+			{
+				throw new ArgumentException();	// TODO specify message
+			}
+
+			if (!this.interfacesTypes.Contains(typeof(TInterface)))
+			{
+				this.interfacesTypes.Add(typeof(TInterface));
+			}
+
+			return new AsInterface<TInterface>(this);
+		}
+
 		private static LambdaExpression GetLambda(Expression expression)
 		{
 			LambdaExpression lambda = (LambdaExpression)expression;
@@ -500,13 +575,13 @@ namespace Moq
 			// They are passed because LambdaExpression constructor checks the type of 
 			// the returned values, even if the return type is Object and everything 
 			// is able to convert to it. It forces you to be explicit about the conversion.
-			var convert = lambda.Body as System.Linq.Expressions.UnaryExpression;
+			var convert = lambda.Body as UnaryExpression;
 			if (convert != null && convert.NodeType == ExpressionType.Convert)
 				lambda = Expression.Lambda(convert.Operand, lambda.Parameters.ToArray());
 			return lambda;
 		}
 
-		private static void GetMethodArguments(Expression<Action<T>> expression, out MethodInfo method, out Expression[] args)
+		private static void GetMethodArguments<T1>(Expression<Action<T1>> expression, out MethodInfo method, out Expression[] args)
 		{
 			Guard.ArgumentNotNull(expression, "expression");
 			LambdaExpression lambda = GetLambda(expression);
@@ -526,7 +601,7 @@ namespace Moq
 			}
 		}
 
-		private static void GetMethodOrPropertyArguments<TResult>(Expression<Func<T, TResult>> expression, out MethodInfo method, out Expression[] args)
+		private static void GetMethodOrPropertyArguments<T1, TResult>(Expression<Func<T1, TResult>> expression, out MethodInfo method, out Expression[] args)
 		{
 			Guard.ArgumentNotNull(expression, "expression");
 			LambdaExpression lambda = GetLambda(expression);
@@ -554,7 +629,7 @@ namespace Moq
 			}
 		}
 
-		private static MethodInfo GetProperySetter<TProperty>(Expression<Func<T, TProperty>> expression)
+		private static MethodInfo GetProperySetter<T1, TProperty>(Expression<Func<T1, TProperty>> expression)
 		{
 			Guard.ArgumentNotNull(expression, "expression");
 			LambdaExpression lambda = GetLambda(expression);
@@ -573,7 +648,7 @@ namespace Moq
 			return prop.GetSetMethod(true);
 		}
 
-		private bool IsPropertyIndexer(Expression expression)
+		private static bool IsPropertyIndexer(Expression expression)
 		{
 			var call = expression as MethodCallExpression;
 
@@ -606,7 +681,7 @@ namespace Moq
 				String.Format(Properties.Resources.ExpressionNotProperty, expression.ToStringFixed()));
 		}
 
-		private void ThrowIfCantOverride(Expression expectation, MethodInfo methodInfo)
+		private static void ThrowIfCantOverride(Expression expectation, MethodInfo methodInfo)
 		{
 			if (!methodInfo.IsVirtual || methodInfo.IsFinal || methodInfo.IsPrivate)
 				throw new ArgumentException(
@@ -626,6 +701,37 @@ namespace Moq
 		//    // TODO: doesn't work as expected but ONLY with interfaces :S
 		//    throw new NotImplementedException();
 		//}
+
+		private class AsInterface<TInterface> : ISetExpectations<TInterface>
+			where TInterface : class
+		{
+			Mock<T> owner;
+
+			public AsInterface(Mock<T> owner)
+			{
+				this.owner = owner;
+			}
+
+			public IExpect<TResult> Expect<TResult>(Expression<Func<TInterface, TResult>> expression)
+			{
+				return Mock<T>.SetUpExpect(expression, this.owner.interceptor);
+			}
+
+			public IExpect Expect(Expression<Action<TInterface>> expression)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IExpectGetter<TProperty> ExpectGet<TProperty>(Expression<Func<TInterface, TProperty>> expression)
+			{
+				return Mock<T>.SetUpExpectGet(expression, this.owner.interceptor);
+			}
+
+			public IExpectSetter<TProperty> ExpectSet<TProperty>(Expression<Func<TInterface, TProperty>> expression)
+			{
+				return Mock<T>.SetUpExpectSet(expression, this.owner.interceptor);
+			}
+		}
 	}
 
 	/// <summary>
