@@ -1,0 +1,55 @@
+Version 2.5
+    * Added support for mocking protected members
+    * Added new way of extending argument matchers which is now very straightforward
+    * Added support for mocking events
+    * Added support for firing mocks from expectations
+    * Removed usage of MBROs which caused inconsistencies in mocking features
+    * Added ExpectGet and ExpectSet to better support properties, and provide better intellisense.
+    * Added verification with expressions, which better supports Arrange-Act-Assert testing model (can do Verify(m => m.Do(...)))
+    * Added Throws<TException>
+    * Added mock.CallBase property to specify whether the virtual members base implementation should be called
+    * Added support for implementing and setting expectations on additional interfaces in the mock, via the new mock.As<TInterface>() method (thanks Fernando Simonazzi!)
+    * Improved argument type matching for Is/IsAny  (thanks Jeremy.Skinner!)
+    * Improved syntax for conditionally throwing from setters.
+    
+
+Version 2.0
+
+    * Refactored fluent API on mocks. This may cause some existing tests to fail, but the fix is trivial (just reorder the calls to Callback, Returns and Verifiable)
+    * Added support for retrieving a Mock<T> from a T instance created by a mock.
+    * Added support for retrieving the invocation arguments from a Callback or Returns.
+    * Implemented AtMostOnce() constraint 
+    * Added support for creating MBROs with protected constructors
+    * Loose mocks now return default empty arrays and IEnumerables instead of nulls
+
+
+Version 1.5.1
+
+    * Refactored MockFactory to make it simpler and more explicit to use with regards to verification. Thanks Garry Shutler for the feedback! 
+
+Version 1.5
+
+    * Added MockFactory to allow easy construction of multiple mocks with the same behavior and verification 
+
+Version 1.4
+
+    * Added support for passing constructor arguments for mocked classes.
+    * Improved code documentation 
+
+Version 1.3
+
+    * Added support for overriding expectations set previously on a Mock. Now adding a second expectation for the same method/property call will override the existing one. This facilitates setting up default expectations in a fixture setup and overriding when necessary in a specific test.
+    * Added support for mock verification. Both Verify and VerifyAll are provided for more flexibility (the former only verifies methods marked Verifiable) 
+
+Version 1.2
+
+    * Added support for MockBehavior mock constructor argument to affect the way the mocks expect or throw on calls. 
+
+Version 1.1
+
+    * Merged branch for dynamic types. Now Moq is based on Castle DynamicProxy2 to support a wider range of mock targets.
+    * Added ILMerge so that Castle libraries are merged into Moq assembly (no need for external references and avoid conflicts) 
+
+Version 1.0
+
+    * Initial release, initial documentation process in place, etc. 
