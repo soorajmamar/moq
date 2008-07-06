@@ -15,7 +15,7 @@ Just make sure you replace the repository URL with ours: http://moq.googlecode.c
 
 We will improve these instructions, hopefully.
 
-= Joining the Moq Contrib Project =
+= Joining the [http://moq-contrib.googlecode.com Moq Contrib Project] =
 
 Just send an email to the [mailto:moqdisc@googlegroups.com Moq Discussions] list asking to join.
 
