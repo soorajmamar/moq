@@ -1,7 +1,7 @@
 #labels Featured
 = Introduction to Moq =
 
-Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly), minimalistic and with a slight bias towards state/classic-testing oriented.
+Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly) and minimalistic.
 
 
 = Examples =
