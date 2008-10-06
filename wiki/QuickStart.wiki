@@ -81,7 +81,7 @@ mock.VerifyGet(foo => foo.Name);
 mock.VerifySet(foo => foo.Name, "foo");
 }}}
 
----
+----
 *Note*: when you need to pass the mock for consumption, you must use the `mock.Object` accessor as a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
 
 Head on to the [http://www.clariusconsulting.net/labs/moq/index.html API documentation], [http://code.google.com/p/moq/downloads/list download it] and have fun! Engage in the [http://groups.google.com/group/moqdisc discussion group] to give us feedback, share your experiences or wishes for vNext!
