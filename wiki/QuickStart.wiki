@@ -3,132 +3,75 @@
 
 Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly) and minimalistic.
 
-
-= Examples =
-
-{{{
-// ShouldExpectCallReturn
-var mock = new Mock<ICloneable>();
-var clone = new object();
-
-mock.Expect(x => x.Clone()).Returns(clone);
-
-Assert.AreSame(clone, mock.Object.Clone());
-}}}
+==Methods==
 
 {{{
-// ShouldExpectCallWithArgument
 var mock = new Mock<IFoo>();
+mock.Expect(foo => foo.Execute("ping")).Returns(true);
 
-mock.Expect(x => x.DoInt(1)).Returns(11);
-mock.Expect(x => x.DoInt(2)).Returns(22);
+// out arguments
+var outString = "ack";
+// TryParse will return true, and the out argument will return "ack", lazy evaluated
+mock.Expect(foo => foo.TryParse("ping", out outString)).Returns(true);
 
-Assert.AreEqual(11, mock.Object.DoInt(1));
-Assert.AreEqual(22, mock.Object.DoInt(2));
+// ref arguments
+var instance = new Bar();
+// Only matches if the ref argument to the invocation is the same instance
+mock.Expect(foo => foo.Submit(ref instance)).Returns(true);
+
+// access invocation arguments
+mock.Expect(x => x.Execute(It.IsAny<string>()))
+		.Returns((string s) => s.ToLower());
 }}}
+
+==Matching Arguments==
 
 {{{
-// ShouldExpectCallWithReferenceLazyEvaluate
-int a = 25;
-var mock = new Mock<IFoo>();
-mock.Expect(x => x.DoArgument(a.ToString())).Returns(() => a);
-a = 10;
+// any value
+mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true);
 
-Assert.AreEqual(10, mock.Object.DoArgument("10"));
+// matching Func<int>, lazy evaluated
+mock.Expect(foo => foo.Add(It.Is<int>(i => i % 2 == 0).Returns(true); 
+
+// matching ranges
+mock.Expect(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive).Returns(true); 
+
+// matching regex
+mock.Expect(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
 }}}
+
+==Properties==
 
 {{{
-// ShouldExpectReturnPropertyValue
-var mock = new Mock<IFoo>();
+mock.Expect(foo => foo.Name).Returns("bar");
 
-mock.Expect(x => x.ValueProperty).Returns(25);
-
-Assert.AreEqual(25, mock.Object.ValueProperty);
+// auto-mocking hierarchies
+mock.Expect(foo => foo.Bar.Baz.Name).Returns("baz");
 }}}
+
+==Events==
 
 {{{
-// ShouldExpectMethodCallWithVariable
-int value = 5;
-var mock = new Mock<IFoo>();
+// Raising an event on the mock
+var handler = mock.CreateEventHandler<FooEventArgs>();
+mock.FooEvent += handler;
+handler.Raise(new FooEventArgs(fooValue));
 
-mock.Expect(x => x.Duplicate(value)).Returns(() => value * 2);
-
-Assert.AreEqual(value * 2, mock.Object.Duplicate(value));
+// Causing an event to raise automatically
+mock.Expect(foo => foo.Submit()).Raises(handler);
 }}}
+
+==Callbacks==
 
 {{{
-// ShouldMatchAnyArgument
 var mock = new Mock<IFoo>();
+mock.Expect(foo => foo.Execute("ping")).Returns(true).Callback(() => calls++);
 
-mock.Expect(x => x.Duplicate(It.IsAny<int>())).Returns(() => 5);
-
-Assert.AreEqual(5, mock.Object.Duplicate(5));
-Assert.AreEqual(5, mock.Objcet.Duplicate(25));
+// access invocation arguments
+mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true).Callback((string s) => calls.Add(s));
 }}}
 
-{{{
-// ShouldMatchPredicateArgument
-var mock = new Mock<IFoo>();
-
-mock.Expect(x => x.Duplicate(It.Is<int>(value => value < 5 && value > 0))).Returns(() => 1);
-
-Assert.AreEqual(1, mock.Object.Duplicate(3));
-Assert.AreEqual(0, mock.Object.Duplicate(0));
-}}}
-
-{{{
-// ShouldExpectCallWithoutReturnValue
-var mock = new Mock<IFoo>();
-
-mock.Expect(x => x.Execute());
-
-mock.Object.Execute();
-}}}
-
-{{{
-// ShouldThrowIfExpectingThrows
-var mock = new Mock<IFoo>();
-
-mock.Expect(x => x.Do1()).Throws(new FormatException());
-
-mock.Object.Do1();
-}}}
-
-{{{
-// ShouldExecuteCallbackWhenVoidMethodIsCalled
-var mock = new Mock<IFoo>();
-bool called = false;
-mock.Expect(x => x.Execute()).Callback(() => called = true);
-
-mock.Object.Execute();
-Assert.IsTrue(called);
-}}}
-
-{{{
-// ShouldExecuteCallbackWhenNonVoidMethodIsCalled
-var mock = new Mock<IFoo>();
-bool called = false;
-mock.Expect(x => x.Do1()).Callback(() => called = true).Returns(1);
-
-Assert.AreEqual(1, mock.Object.Do1());
-Assert.IsTrue(called);
-}}}
-
-{{{
-// ShouldExpectRanges
-var mock = new Mock<IFoo>();
-
-mock.Expect(x => x.DoInt(It.IsInRange(1, 5, Range.Inclusive))).Returns(1);
-mock.Expect(x => x.DoInt(It.IsInRange(6, 10, Range.Exclusive))).Returns(2);
-
-Assert.AreEqual(1, mock.Object.DoInt(1));
-Assert.AreEqual(1, mock.Object.DoInt(2));
-Assert.AreEqual(1, mock.Object.DoInt(5));
-
-Assert.AreEqual(2, mock.Object.DoInt(7));
-Assert.AreEqual(2, mock.Object.DoInt(9));
-}}}
-
-*Note*: the required `mock.Object` accessor is a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
+---
+*Note*: when you need to pass the mock for consumption, you must use the `mock.Object` accessor as a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
 
 Head on to the [http://www.clariusconsulting.net/labs/moq/index.html API documentation], [http://code.google.com/p/moq/downloads/list download it] and have fun! Engage in the [http://groups.google.com/group/moqdisc discussion group] to give us feedback, share your experiences or wishes for vNext!
