@@ -47,6 +47,8 @@ mock.Expect(foo => foo.Name).Returns("bar");
 
 // auto-mocking hierarchies
 mock.Expect(foo => foo.Bar.Baz.Name).Returns("baz");
+
+mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
 }}}
 
 ==Events==
