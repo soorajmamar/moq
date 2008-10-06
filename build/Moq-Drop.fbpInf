@@ -1,7 +1,7 @@
 <project>
   <watches><watch>WorkingDirectory</watch>
     </watches>
-  <collapsedNodes>{0E568CC9-654E-426E-A583-472C01D1B644},{2BE4D10A-8303-4BBD-9395-6EB35DCDC9CD},{47B66B0F-CFDD-45D7-BA0F-7178371A9A9C},{6C459D40-BE08-45E9-A33D-A642247B5923},{F148ACCF-9C8F-4E21-9773-CEA1482B56F6}</collapsedNodes>
+  <collapsedNodes>{0E568CC9-654E-426E-A583-472C01D1B644},{6C459D40-BE08-45E9-A33D-A642247B5923}</collapsedNodes>
   <breakpoints></breakpoints>
   <actions/>
   <propertysets/>
