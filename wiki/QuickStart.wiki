@@ -22,6 +22,14 @@ mock.Expect(foo => foo.Submit(ref instance)).Returns(true);
 // access invocation arguments
 mock.Expect(x => x.Execute(It.IsAny<string>()))
 		.Returns((string s) => s.ToLower());
+
+// lazy evaluating return value
+mock.Expect(foo => foo.Count()).Returns(() => count);
+
+// throwing when invoked
+mock.Expect(foo => foo.Execute("reset")).Throws<InvalidOperationException>();
+mock.Expect(foo => foo.Execute("")).Throws(new ArgumentException("command");
+
 }}}
 
 ==Matching Arguments==
@@ -80,6 +88,25 @@ mock.Verify(foo => foo.Execute("ping"));
 mock.VerifyGet(foo => foo.Name);
 mock.VerifySet(foo => foo.Name, "foo");
 }}}
+
+== Advanced Features == 
+
+{{{
+// get mock from a mocked instance
+IFoo foo = // get instance somehow
+var fooMock = Mock.Get(foo);
+fooMock.Expect(f => f.Submit()).Returns(true);
+
+// custom matchers
+mock.Expect(foo => foo.Submit(IsLarge())).Throws<ArgumentException>();
+...
+[Matcher]
+public string IsLarge() { return null; }
+public bool IsLarge(string arg) { return !String.IsNullOrEmpty(arg) && arg.Length > 100; }
+
+
+}}}
+
 
 ----
 *Note*: when you need to pass the mock for consumption, you must use the `mock.Object` accessor as a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
