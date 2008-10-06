@@ -9,22 +9,27 @@ Moq is intended to be simple to use, strong typed (no magic strings!, and theref
 var mock = new Mock<IFoo>();
 mock.Expect(foo => foo.Execute("ping")).Returns(true);
 
+
 // out arguments
 var outString = "ack";
 // TryParse will return true, and the out argument will return "ack", lazy evaluated
 mock.Expect(foo => foo.TryParse("ping", out outString)).Returns(true);
+
 
 // ref arguments
 var instance = new Bar();
 // Only matches if the ref argument to the invocation is the same instance
 mock.Expect(foo => foo.Submit(ref instance)).Returns(true);
 
+
 // access invocation arguments
 mock.Expect(x => x.Execute(It.IsAny<string>()))
 		.Returns((string s) => s.ToLower());
 
+
 // lazy evaluating return value
 mock.Expect(foo => foo.Count()).Returns(() => count);
+
 
 // throwing when invoked
 mock.Expect(foo => foo.Execute("reset")).Throws<InvalidOperationException>();
@@ -38,11 +43,14 @@ mock.Expect(foo => foo.Execute("")).Throws(new ArgumentException("command");
 // any value
 mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true);
 
+
 // matching Func<int>, lazy evaluated
 mock.Expect(foo => foo.Add(It.Is<int>(i => i % 2 == 0).Returns(true); 
 
+
 // matching ranges
 mock.Expect(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive).Returns(true); 
+
 
 // matching regex
 mock.Expect(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
@@ -53,8 +61,10 @@ mock.Expect(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Retur
 {{{
 mock.Expect(foo => foo.Name).Returns("bar");
 
+
 // auto-mocking hierarchies
 mock.Expect(foo => foo.Bar.Baz.Name).Returns("baz");
+
 
 mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
 }}}
@@ -67,6 +77,7 @@ var handler = mock.CreateEventHandler<FooEventArgs>();
 mock.FooEvent += handler;
 handler.Raise(new FooEventArgs(fooValue));
 
+
 // Causing an event to raise automatically
 mock.Expect(foo => foo.Submit()).Raises(handler);
 }}}
@@ -76,6 +87,7 @@ mock.Expect(foo => foo.Submit()).Raises(handler);
 {{{
 var mock = new Mock<IFoo>();
 mock.Expect(foo => foo.Execute("ping")).Returns(true).Callback(() => calls++);
+
 
 // access invocation arguments
 mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true).Callback((string s) => calls.Add(s));
@@ -97,12 +109,14 @@ IFoo foo = // get instance somehow
 var fooMock = Mock.Get(foo);
 fooMock.Expect(f => f.Submit()).Returns(true);
 
+
 // custom matchers
 mock.Expect(foo => foo.Submit(IsLarge())).Throws<ArgumentException>();
 ...
 [Matcher]
 public string IsLarge() { return null; }
 public bool IsLarge(string arg) { return !String.IsNullOrEmpty(arg) && arg.Length > 100; }
+
 
 // implementing multiple interfaces in mock
 var foo = new Mock<IFoo>();
