@@ -74,9 +74,12 @@ mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true).Callback((stri
 }}}
 
 == Verification==
+
+{{{
 mock.Verify(foo => foo.Execute("ping"));
 mock.VerifyGet(foo => foo.Name);
 mock.VerifySet(foo => foo.Name, "foo");
+}}}
 
 ---
 *Note*: when you need to pass the mock for consumption, you must use the `mock.Object` accessor as a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
