@@ -104,6 +104,11 @@ mock.Expect(foo => foo.Submit(IsLarge())).Throws<ArgumentException>();
 public string IsLarge() { return null; }
 public bool IsLarge(string arg) { return !String.IsNullOrEmpty(arg) && arg.Length > 100; }
 
+// implementing multiple interfaces in mock
+var foo = new Mock<IFoo>();
+var disposableFoo = foo.As<IDisposable>();
+// now the IFoo also implements IDisposable :)
+
 
 }}}
 
