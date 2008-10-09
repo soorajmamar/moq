@@ -143,7 +143,10 @@ mock.Expect(foo => foo.Submit(IsLarge())).Throws<ArgumentException>();
 ...
 [Matcher]
 public string IsLarge() { return null; }
-public bool IsLarge(string arg) { return !String.IsNullOrEmpty(arg) && arg.Length > 100; }
+public bool IsLarge(string arg)
+{ 
+  return !String.IsNullOrEmpty(arg) && arg.Length > 100;
+}
 
 
 }}}
