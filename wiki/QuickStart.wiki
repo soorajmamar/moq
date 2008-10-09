@@ -152,6 +152,19 @@ public bool IsLarge(string arg)
 }}}
 
 
+=Read more=
+  * [http://weblogs.asp.net/stephenwalther/archive/2008/06/11/tdd-introduction-to-moq.aspx TDD : Introduction to Moq]
+  * [http://translate.google.com.ar/translate?u=http%3A%2F%2Fwww.gmbsg.com%2Fworks%2Findex.php%3Ftitle%3DUnit_Testing_Revisited_-_Die_Unit_Test_Evolution_mit_C-Sharp_3.0&sl=de&tl=en&hl=es&ie=UTF-8 Unit Testing Revisited - The evolution unit test with C-Sharp 3.0] (Google-translated)
+  * [http://www.nixusg.com/post/2008/08/10/The-Automated-Testing-Continuum-Part-3-(Moq).aspx The automated testing continuum]
+  * [http://www.emadibrahim.com/2008/04/04/unit-test-linq-to-sql-in-aspnet-mvc-with-moq/ Unit Test Linq to Sql in ASP.Net MVC with Moq]
+  * [http://www.bestechvideos.com/2008/06/08/dimecasts-net-introduction-to-mocking-with-moq?query=moq+screencast Introduction to Mocking with Moq (Video)]
+  * [http://geekswithblogs.net/liammclennan/archive/2008/05/09/122007.aspx Comparing Moq to Rhino Mocks]
+  * [http://www.hanselman.com/blog/MoqLinqLambdasAndPredicatesAppliedToMockObjects.aspx Moq: Linq, Lambdas and Predicates applied to Mock Objects]
+  * [http://www.goneeded.com/javas/articles/20080324/a1811942466.html 
+  * [http://weblogs.manas.com.ar/bcardiff/2008/04/improoved-argument-matchers-in-moq/ Improved argument matchers in Moq]
+  * [http://www.madprops.org/blog/moq-triqs-successive-expectations/ Moq Triqs - Successive Expectations]
+
+
 ----
 *Note*: when you need to pass the mock for consumption, you must use the `mock.Object` accessor as a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
 
