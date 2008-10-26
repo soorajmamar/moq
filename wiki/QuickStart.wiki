@@ -90,6 +90,8 @@ handler.Raise(new FooEventArgs(fooValue));
 
 // Causing an event to raise automatically
 mock.Expect(foo => foo.Submit()).Raises(handler, EventArgs.Empty);
+// The raised event would trigger behavior on the object under test, which 
+// you would make assertions about later (how its state changed as a consequence, typically)
 }}}
 
 ==Callbacks==
