@@ -89,7 +89,7 @@ handler.Raise(new FooEventArgs(fooValue));
 
 
 // Causing an event to raise automatically
-mock.Expect(foo => foo.Submit()).Raises(handler);
+mock.Expect(foo => foo.Submit()).Raises(handler, EventArgs.Empty);
 }}}
 
 ==Callbacks==
