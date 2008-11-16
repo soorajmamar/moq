@@ -83,13 +83,13 @@ mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
 
 {{{
 // Raising an event on the mock
-var handler = mock.CreateEventHandler<FooEventArgs>();
-mock.FooEvent += handler;
-handler.Raise(new FooEventArgs(fooValue));
+mock.Raise(m => m.FooEvent += null, new FooEventArgs(fooValue));
 
+// Raising an event on a descendant down the hierarchy
+mock.Raise(m => m.Child.First.FooEvent += null, new FooEventArgs(fooValue));
 
-// Causing an event to raise automatically
-mock.Expect(foo => foo.Submit()).Raises(handler, EventArgs.Empty);
+// Causing an event to raise automatically when Submit is invoked
+mock.Expect(foo => foo.Submit()).Raises(f => f.Sent += null, EventArgs.Empty);
 // The raised event would trigger behavior on the object under test, which 
 // you would make assertions about later (how its state changed as a consequence, typically)
 }}}
