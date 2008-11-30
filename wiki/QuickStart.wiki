@@ -91,7 +91,7 @@ handler.Raise(new FooArgs { Value = "foo" });
 // Causing the event to raise automatically when Submit is invoked
 mock.Expect(foo => foo.Submit()).Raises(handler, new FooArgs { Value = "foo" });
 }}}
-===Next version===
+Moq vNext (3.0) will implement a much easier syntax for events:
 {{{
 // Raising an event on the mock
 mock.Raise(m => m.FooEvent += null, new FooEventArgs(fooValue));
