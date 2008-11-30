@@ -80,7 +80,18 @@ mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
 }}}
 
 ==Events==
+{{{
+var handler = mock.CreateEventHandler<FooArgs>();
+// Associate the handler with the event we'll raise
+view.Object.FooSelected += handler;
 
+// Raise the event
+handler.Raise(new FooArgs { Value = "foo" });
+
+// Causing the event to raise automatically when Submit is invoked
+mock.Expect(foo => foo.Submit()).Raises(handler, new FooArgs { Value = "foo" });
+}}}
+===Next version===
 {{{
 // Raising an event on the mock
 mock.Raise(m => m.FooEvent += null, new FooEventArgs(fooValue));
