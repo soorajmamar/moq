@@ -90,13 +90,13 @@ mock.Stub(f => f.Name, "foo");
 
 // Now you can do:
 
-IHaveValue hv = mock.Object;
+IFoo foo = mock.Object;
 // Initial value was stored
-Assert.Equal(5, hv.Value);
+Assert.Equal("foo", foo.Name);
 
 // New value set which changes the initial value
-hv.Value = 6;
-Assert.Equal(6, hv.Value);
+foo.Name = "bar";
+Assert.Equal("bar", foo.Name);
 }}}
 
 Stub all properties on a mock:
