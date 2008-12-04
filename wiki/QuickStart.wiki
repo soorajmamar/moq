@@ -79,7 +79,7 @@ mock.Expect(foo => foo.Bar.Baz.Name).Returns("baz");
 mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
 }}}
 
-Stub a property so that it will automatically start tracking its value:
+  * Stub a property so that it will automatically start tracking its value:
 {{{
 // start "tracking" sets/gets to this property
 mock.Stub(f => f.Name);
@@ -99,7 +99,7 @@ foo.Name = "bar";
 Assert.Equal("bar", foo.Name);
 }}}
 
-Stub all properties on a mock:
+  * Stub all properties on a mock:
 {{{
 mock.StubAll();
 }}}
@@ -163,19 +163,18 @@ mock.VerifySet(foo => foo.Name, "foo");
 == Customizing Mock Behavior ==
 
   * Make mock behave like a "true Mock", raising exceptions for anything that doesn't have a corresponding expectation: in Moq slang a "Strict" mock; default behavior is "Loose" mock, which never throws and returns default values or empty arrays, enumerables, etc. if no expectation is set for a member
-
 {{{
 var mock = new Mock<IFoo>(MockBehavior.Strict);
 }}}
 
-  * Invoke base class implementation if no expectation overrides the member (a.k.a. "Partial Mocks" in Rhino Mocks)
 
+  * Invoke base class implementation if no expectation overrides the member (a.k.a. "Partial Mocks" in Rhino Mocks)
 {{{
 var mock = new Mock<IFoo> { CallBase = true };
 }}}
 
-  * Make an automatic recursive mock: a mock that will return a new mock for every member that doesn't have an expectation and whose return value can be mocked
 
+  * Make an automatic recursive mock: a mock that will return a new mock for every member that doesn't have an expectation and whose return value can be mocked
 {{{
 var mock = new Mock<IFoo> { DefaultValue = DefaultValue.Mock };
 // default is DefaultValue.Empty
@@ -190,6 +189,7 @@ var barMock = Mock.Get(value);
 barMock.Expect(b => b.Submit()).Returns(true);
 }}}
 
+
   * Centralizing mock instance creation and management: you can create and verify all mocks in a single place by using a MockFactory, which allows setting the MockBehavior, its CallBase and DefaultValue consistently
 {{{
 var factory = new MockFactory(MockBehavior.Strict) { DefaultValue = DefaultValue.Mock };
@@ -202,13 +202,12 @@ var barMock = factory.Create<IBar>(MockBehavior.Loose);
 
 // Verify all verifiable expectations on all mocks created through the factory
 factory.Verify();
-
 }}}
+
 
 == Miscellaneous == 
 
   * Setting expectations for protected members (you can't get intellisense for these, so you access them using the member name as a string):
-
 {{{
 // at the top of the test fixture
 using Moq.Protected()
