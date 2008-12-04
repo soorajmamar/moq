@@ -3,7 +3,7 @@
 
 Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly) and minimalistic.
 
-==Methods==
+== Methods ==
 
 {{{
 var mock = new Mock<IFoo>();
@@ -47,7 +47,7 @@ Console.WriteLine(mock.Object.Execute("ping"));
 
 }}}
 
-==Matching Arguments==
+== Matching Arguments ==
 
 {{{
 // any value
@@ -66,20 +66,45 @@ mock.Expect(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive).Returns(tru
 mock.Expect(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
 }}}
 
-==Properties==
+== Properties ==
 
 {{{
 mock.Expect(foo => foo.Name).Returns("bar");
 
 
-// auto-mocking hierarchies
+// auto-mocking hierarchies (a.k.a. recursive mocks)
 mock.Expect(foo => foo.Bar.Baz.Name).Returns("baz");
 
 
 mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
 }}}
 
-==Events==
+Stub a property so that it will automatically start tracking its value:
+{{{
+// start "tracking" sets/gets to this property
+mock.Stub(f => f.Name);
+
+// alternatively, provide a default value for the stubbed property
+mock.Stub(f => f.Name, "foo");
+
+
+// Now you can do:
+
+IHaveValue hv = mock.Object;
+// Initial value was stored
+Assert.Equal(5, hv.Value);
+
+// New value set which changes the initial value
+hv.Value = 6;
+Assert.Equal(6, hv.Value);
+}}}
+
+Stub all properties on a mock:
+{{{
+mock.StubAll();
+}}}
+
+== Events ==
 {{{
 var handler = mock.CreateEventHandler<FooArgs>();
 // Associate the handler with the event we'll raise
@@ -135,6 +160,72 @@ mock.VerifyGet(foo => foo.Name);
 mock.VerifySet(foo => foo.Name, "foo");
 }}}
 
+== Customizing Mock Behavior ==
+
+  * Make mock behave like a "true Mock", raising exceptions for anything that doesn't have a corresponding expectation: in Moq slang a "Strict" mock; default behavior is "Loose" mock, which never throws and returns default values or empty arrays, enumerables, etc. if no expectation is set for a member
+
+{{{
+var mock = new Mock<IFoo>(MockBehavior.Strict);
+}}}
+
+  * Invoke base class implementation if no expectation overrides the member (a.k.a. "Partial Mocks" in Rhino Mocks)
+
+{{{
+var mock = new Mock<IFoo> { CallBase = true };
+}}}
+
+  * Make an automatic recursive mock: a mock that will return a new mock for every member that doesn't have an expectation and whose return value can be mocked
+
+{{{
+var mock = new Mock<IFoo> { DefaultValue = DefaultValue.Mock };
+// default is DefaultValue.Empty
+
+// this property access would return a new mock of IBar as it's "mock-able"
+IBar value = mock.Object.Bar;
+
+// the returned mock is reused, so further accesses to the property return 
+// the same mock instance. this allows us to also use this instance to 
+// set further expectations on it if we want
+var barMock = Mock.Get(value);
+barMock.Expect(b => b.Submit()).Returns(true);
+}}}
+
+  * Centralizing mock instance creation and management: you can create and verify all mocks in a single place by using a MockFactory, which allows setting the MockBehavior, its CallBase and DefaultValue consistently
+{{{
+var factory = new MockFactory(MockBehavior.Strict) { DefaultValue = DefaultValue.Mock };
+
+// Create a mock using the factory settings
+var fooMock = factory.Create<IFoo>();
+
+// Create a mock overriding the factory settings
+var barMock = factory.Create<IBar>(MockBehavior.Loose);
+
+// Verify all verifiable expectations on all mocks created through the factory
+factory.Verify();
+
+}}}
+
+== Miscellaneous == 
+
+  * Setting expectations for protected members (you can't get intellisense for these, so you access them using the member name as a string):
+
+{{{
+// at the top of the test fixture
+using Moq.Protected()
+
+// in the test
+var mock = new Mock<CommandBase>();
+mock.Protected()
+     .Expect<int>("Execute")
+     .Returns(5);
+
+// if you need argument matching, you MUST use ItExpr rather than It
+mock.Protected()
+    .Expect<string>("Execute",
+        ItExpr.IsAny<string>())
+    .Returns(true);
+}}}
+
 == Advanced Features == 
 
 {{{
@@ -147,7 +238,7 @@ fooMock.Expect(f => f.Submit()).Returns(true);
 // implementing multiple interfaces in mock
 var foo = new Mock<IFoo>();
 var disposableFoo = foo.As<IDisposable>();
-// now the IFoo also implements IDisposable :)
+// now the IFoo mock also implements IDisposable :)
 disposableFoo.Expect(df => df.Dispose());
 
 
