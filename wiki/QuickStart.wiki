@@ -168,6 +168,7 @@ var mock = new Mock<IFoo>(MockBehavior.Strict);
 }}}
 
 
+
   * Invoke base class implementation if no expectation overrides the member (a.k.a. "Partial Mocks" in Rhino Mocks)
 {{{
 var mock = new Mock<IFoo> { CallBase = true };
