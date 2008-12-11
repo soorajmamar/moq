@@ -55,11 +55,11 @@ mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true);
 
 
 // matching Func<int>, lazy evaluated
-mock.Expect(foo => foo.Add(It.Is<int>(i => i % 2 == 0).Returns(true); 
+mock.Expect(foo => foo.Add(It.Is<int>(i => i % 2 == 0))).Returns(true); 
 
 
 // matching ranges
-mock.Expect(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive).Returns(true); 
+mock.Expect(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive))).Returns(true); 
 
 
 // matching regex
