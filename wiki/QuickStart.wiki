@@ -22,7 +22,7 @@ var instance = new Bar();
 mock.Expect(foo => foo.Submit(ref instance)).Returns(true);
 
 
-// access invocation arguments
+// access invocation arguments when returning a value
 mock.Expect(x => x.Execute(It.IsAny<string>()))
 		.Returns((string s) => s.ToLower());
 
