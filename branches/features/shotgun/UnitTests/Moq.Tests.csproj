@@ -65,6 +65,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -80,6 +81,9 @@
   <ItemGroup>
     <Compile Include="AsInterfaceFixture.cs" />
     <Compile Include="IlFixture.cs" />
+    <Compile Include="Instrumentation\InstrumentationFixture.cs" />
+    <Compile Include="Instrumentation\InvocationFixture.cs" />
+    <Compile Include="Instrumentation\Reflect.cs" />
     <Compile Include="RecursiveMocksFixture.cs" />
     <Compile Include="CallbacksFixture.cs" />
     <Compile Include="EmptyDefaultValueProviderFixture.cs" />
