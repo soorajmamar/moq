@@ -71,6 +71,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +145,7 @@
     <Compile Include="DefaultValue.cs" />
     <Compile Include="EventInfoCallback.cs" />
     <Compile Include="IDefaultValueProvider.cs" />
+    <Compile Include="Instrumentation\Invocation.cs" />
     <Compile Include="Language\INever.cs" />
     <Compile Include="Matchers\ParamArrayMatcher.cs" />
     <Compile Include="Matchers\RefMatcher.cs" />
