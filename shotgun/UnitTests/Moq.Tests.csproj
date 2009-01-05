@@ -81,6 +81,8 @@
   <ItemGroup>
     <Compile Include="AsInterfaceFixture.cs" />
     <Compile Include="IlFixture.cs" />
+    <Compile Include="Instrumentation\CecilExtensions.cs" />
+    <Compile Include="Instrumentation\CecilExtensionsFixture.cs" />
     <Compile Include="Instrumentation\InstrumentationFixture.cs" />
     <Compile Include="Instrumentation\InvocationFixture.cs" />
     <Compile Include="Instrumentation\Reflect.cs" />

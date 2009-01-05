@@ -4,6 +4,6 @@ namespace Moq.Instrumentation
 {
 	public interface IInterceptor
 	{
-		IInvocation Intercept(IInvocation invocation);
+		bool Intercept(IInvocation invocation);
 	}
 }
