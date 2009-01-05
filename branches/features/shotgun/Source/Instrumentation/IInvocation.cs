@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace Moq.Instrumentation
 {
@@ -11,27 +12,23 @@ namespace Moq.Instrumentation
 		/// <summary>
 		/// The target object where the invocation is being performed.
 		/// </summary>
-		object Target { get; set; }
+		object Target { get; }
 		/// <summary>
 		/// The type of the target object being invoked. Needed as 
 		/// the <see cref="Target"/> may be null for static invocations.
 		/// </summary>
-		Type TargetType { get; set; }
+		Type TargetType { get; }
 		/// <summary>
 		/// The member being invoked.
 		/// </summary>
-		MethodBase Method { get; set; }
+		MethodBase Method { get; }
 		/// <summary>
 		/// The arguments of the invocation (regular, ref and out).
 		/// </summary>
-		object[] Arguments { get; set; }
+		ReadOnlyCollection<object> Arguments { get; }
 		/// <summary>
-		/// The return value of the methor invocation, if any.
+		/// The return value of the method invocation, if any.
 		/// </summary>
 		object ReturnValue { get; set; }
-		/// <summary>
-		/// Whether the actual method should be invoked or not.
-		/// </summary>
-		bool ShouldContinue { get; set; }
 	}
 }
