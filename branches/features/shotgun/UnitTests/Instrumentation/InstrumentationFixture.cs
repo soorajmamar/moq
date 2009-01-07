@@ -32,118 +32,158 @@ namespace Moq.Tests.Instrumentation
 		}
 
 		[Fact]
+		public void CecilRepro()
+		{
+			var asm = AssemblyFactory.GetAssembly(this.GetType().Assembly.Location);
+			var listOfObject = asm.MainModule.Import(typeof(List<object>));
+			var method = asm.MainModule.Types.Cast<TypeDefinition>()
+				.Where(t => t.FullName == typeof(InvocationFixture).FullName)
+				.Single();
+
+			foreach (var prop in method.Properties.Cast<PropertyDefinition>())
+			{
+				Console.WriteLine(prop.Attributes);
+			}
+		}
+
+		[Fact]
 		public void InstrumentsClass()
 		{
 			var asm = AssemblyFactory.GetAssembly(this.GetType().Assembly.Location);
-			//var moqAssemblyRef = asm.MainModule.AssemblyReferences.Add(typeof(Mock).Assembly);
-			var interceptorRef = asm.MainModule.TypeReferences.Add(typeof(IInterceptor));
-			//var typeTypeRef = asm.MainModule.TypeReferences.Add(typeof(Type));
-			//var getTypeFromHandle = new MethodReference("GetTypeFromHandle", typeTypeRef, typeTypeRef, false, false, MethodCallingConvention.Default);
-			//var methodBaseRef = asm.MainModule.TypeReferences.Add(typeof(MethodBase));
-			//var getCurrentMethod = new MethodReference("GetCurrentMethod", methodBaseRef, methodBaseRef, false, false, MethodCallingConvention.Default);
-			//var listOfObject = asm.MainModule.TypeReferences.Add(typeof(List<object>));
-			//var addToList = new MethodReference("Add", listOfObject, null, true, false, MethodCallingConvention.Default);
-			//var invocationTypeRef = asm.MainModule.TypeReferences.Add(typeof(Invocation));
-			//var intTypeRef = asm.MainModule.TypeReferences.Add(typeof(int));
+			var interceptorRef = asm.MainModule.Import(typeof(IInterceptor));
+			var typeTypeRef = asm.MainModule.Import(typeof(Type));
+			var getTypeFromHandle = asm.MainModule.Import(Reflect.GetMethod(() => Type.GetTypeFromHandle(new RuntimeTypeHandle())));
+			var methodBaseRef = asm.MainModule.Import(typeof(MethodBase));
+			var getCurrentMethod = asm.MainModule.Import(Reflect.GetMethod(() => MethodBase.GetCurrentMethod()));
+			var listOfObject = asm.MainModule.Import(typeof(List<object>));
+			var listOfObjectCtor = asm.MainModule.Import(Reflect.GetConstructor(() => new List<object>()));
+			var addToList = asm.MainModule.Import(Reflect<List<object>>.GetMethod(l => l.Add(new object())));
+			var invocationTypeRef = asm.MainModule.Import(typeof(Invocation));
+			var invocationCtor = asm.MainModule.Import(Reflect.GetConstructor(() => new Invocation(null, null, null, null, null)));
+			var iinstrumentedRef = asm.MainModule.Import(typeof(IInstrumented));
 
 			foreach (var type in asm.Modules.Cast<ModuleDefinition>().SelectMany(a => a.Types.Cast<TypeDefinition>())
 				// TODO: remove the Where for production.
 				.Where(t => t.Name == "InstrumentedClass"))
 			{
-				// private IInterceptor __Interceptor;
-				var interceptorDef = new FieldDefinition("__Interceptor", interceptorRef, Mono.Cecil.FieldAttributes.Private);
-				type.Fields.Add(interceptorDef);
-				var interceptorField = new FieldReference("__Interceptor", type, interceptorRef);
+				// IInstrumented interface
+				type.Interfaces.Add(iinstrumentedRef);
 
-				// TODO: remove
-				//var cw = asm.MainModule.Import(Reflect.GetMethod(() => Console.WriteLine((object)null)));
+				// private IInterceptor __interceptor;
+				var interceptorDef = new FieldDefinition("__interceptor", interceptorRef, Mono.Cecil.FieldAttributes.Public);
+				type.Fields.Add(interceptorDef);
+				// public IInterceptor Interceptor { get; set; }
+				var interceptorProp = new PropertyDefinition("Interceptor", interceptorRef, (Mono.Cecil.PropertyAttributes)0);
+				type.Properties.Add(interceptorProp);
+				// TODO: add getter/setter
 
 				foreach (var method in type.Methods.Cast<MethodDefinition>())
 				{
-					//var argsVar = new VariableDefinition(listOfObject);
-					//var invocationVar = new VariableDefinition(invocationTypeRef);
-					//// List<object> args;
-					//method.Body.Variables.Add(argsVar);
-					//// Invocation invocation;
-					//method.Body.Variables.Add(invocationVar);
+					method.Body.InitLocals = true;
+					var argsVar = new VariableDefinition(listOfObject);
+					var invocationVar = new VariableDefinition(invocationTypeRef);
+					// List<object> args;
+					method.Body.Variables.Add(argsVar);
+					// Invocation invocation;
+					method.Body.Variables.Add(invocationVar);
 
 					var il = method.Body.CilWorker;
 					var instructions = new List<Instruction>(new[] 
 					{
 						// if (__Interceptor != null)
 						il.Create(OpCodes.Ldarg_0), 
-						il.Create(OpCodes.Ldfld, interceptorField),
+						il.Create(OpCodes.Ldfld, interceptorDef),
 						il.Create(OpCodes.Ldnull), 
 						il.Create(OpCodes.Ceq), 
 						il.Create(OpCodes.Brtrue_S, method.Body.Instructions[0]), 
 						// args = new List<object>();
-						//il.Create(OpCodes.Newobj, listOfObject), 
-						//il.Create(OpCodes.Stloc, argsVar)
+						il.Create(OpCodes.Newobj, listOfObjectCtor), 
+						il.Create(OpCodes.Stloc, argsVar)
 					});
 
-					//foreach (var paramDef in method.Parameters.Cast<ParameterDefinition>())
-					//{
-					//    instructions.Add(il.Create(OpCodes.Ldloc, argsVar));
-					//    if (paramDef.IsOut)
-					//    {
-					//        // Out args are added with their default value.
-					//        if (paramDef.ParameterType.IsValueType)
-					//        {
-					//            //args.Add(default(paramType));
-					//            instructions.Add(il.Create(OpCodes.Ldc_I4_0));
-					//            instructions.Add(il.Create(OpCodes.Box, intTypeRef));
-					//        }
-					//        else
-					//        {
-					//            //args.Add(null);
-					//            instructions.Add(il.Create(OpCodes.Ldnull));
-					//        }
-					//    }
-					//    else
-					//    {
-					//        // Regular or ref arguments are copied directly.
-					//        //args.Add(param0..n);
-					//        instructions.Add(il.Create(OpCodes.Ldarg, paramDef));
-					//    }
+					foreach (var paramDef in method.Parameters.Cast<ParameterDefinition>())
+					{
+						instructions.Add(il.Create(OpCodes.Ldloc, argsVar));
+						if (paramDef.IsOut)
+						{
+							// Out args are added with their default value.
+							if (paramDef.ParameterType.IsValueType)
+							{
+								//args.Add(default(paramType));
+								instructions.Add(il.Create(OpCodes.Ldc_I4_0));
+								instructions.Add(il.Create(OpCodes.Box, paramDef.ParameterType));
+							}
+							else
+							{
+								//args.Add(null);
+								instructions.Add(il.Create(OpCodes.Ldnull));
+							}
+						}
+						else
+						{
+							if (paramDef.ParameterType.IsValueType)
+							{
+								// This is what the C# compiler does: just passes a default value :|
+								if (paramDef.ParameterType.Name.EndsWith("&"))
+								{
+									// Load default value.
+									instructions.Add(il.Create(OpCodes.Ldc_I4_0));
+								}
+								else
+								{
+									instructions.Add(il.Create(OpCodes.Ldarg, paramDef));
+								}
 
-					//    instructions.Add(il.Create(OpCodes.Callvirt, addToList));
-					//}
+								instructions.Add(il.Create(OpCodes.Box, paramDef.ParameterType));
+							}
+							else
+							{
+								instructions.Add(il.Create(OpCodes.Ldarg, paramDef));
 
-					//instructions.AddRange(new[] 
-					//{
-					//    //typeof(TheType)
-					//    il.Create(OpCodes.Ldtoken, type.ToReference()),
-					//    il.Create(OpCodes.Call, getTypeFromHandle),
-					//    //MethodBase.GetCurrentMethod()
-					//    il.Create(OpCodes.Call, getCurrentMethod),
-					//    //args
-					//    il.Create(OpCodes.Ldloc, argsVar),
-					//});
+								// TODO is this "&" lookup the right way to do this??
+								if (paramDef.ParameterType.Name.EndsWith("&"))
+									// Dereference byref addresses
+									instructions.Add(il.Create(OpCodes.Ldind_Ref));
+							}
+						}
 
-					//// default(TReturn)
-					//if (method.ReturnType != null && method.ReturnType.ReturnType.IsValueType)
-					//{
-					//    //default(valuetype) == 0
-					//    instructions.Add(il.Create(OpCodes.Ldc_I4_0));
-					//    instructions.Add(il.Create(OpCodes.Box, intTypeRef));
-					//}
-					//else
-					//{
-					//    //default == null
-					//    instructions.Add(il.Create(OpCodes.Ldnull));
-					//}
+						instructions.Add(il.Create(OpCodes.Callvirt, addToList));
+					}
 
-					//instructions.Add(il.Create(OpCodes.Newobj, invocationTypeRef));
+					instructions.AddRange(new[] 
+					{
+						//this
+						il.Create(OpCodes.Ldloc_0),
+					    //typeof(TheType)
+					    il.Create(OpCodes.Ldtoken, type),
+					    il.Create(OpCodes.Call, getTypeFromHandle),
+					    //MethodBase.GetCurrentMethod()
+					    il.Create(OpCodes.Call, getCurrentMethod),
+					    //args
+					    il.Create(OpCodes.Ldloc, argsVar),
+					});
 
-					////    il.Create(OpCodes.Ldstr, "intercepted"),
-					////    il.Create(OpCodes.Ret)
+					// default(TReturn)
+					if (method.ReturnType.ReturnType.FullName != typeof(void).FullName && 
+						method.ReturnType.ReturnType.IsValueType)
+					{
+						//default(valuetype) == 0
+						instructions.Add(il.Create(OpCodes.Ldc_I4_0));
+						instructions.Add(il.Create(OpCodes.Box, method.ReturnType.ReturnType));
+					}
+					else
+					{
+						//default == null
+						instructions.Add(il.Create(OpCodes.Ldnull));
+					}
 
-					////    il.Create(OpCodes.Ldarg_0), 
-					////    il.Create(OpCodes.Ldfld, interceptorField),
-					////});
+					instructions.Add(il.Create(OpCodes.Newobj, invocationCtor));
 
-					//instructions.Add(il.Create(OpCodes.Ldloc, invocationVar));
-					//instructions.Add(il.Create(OpCodes.Call, cw));
+					// TODO: remove
+					instructions.Add(il.Create(OpCodes.Ldloc, invocationVar));
+					var cw = asm.MainModule.Import(Reflect.GetMethod(() => Console.WriteLine((object)null)));
+
+					instructions.Add(il.Create(OpCodes.Call, cw));
 
 					il.InsertRangeBefore(method.Body.Instructions[0], instructions);
 				}
@@ -192,7 +232,7 @@ namespace Moq.Tests.Instrumentation
 			return message;
 		}
 
-		public void VoidMethod(int value, out bool value2, ref string value3)
+		public void VoidMethod(int value, out bool value2, ref string value3, ref int value4)
 		{
 			value2 = true;
 		}
