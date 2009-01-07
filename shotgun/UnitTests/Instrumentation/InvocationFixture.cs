@@ -5,25 +5,23 @@ using System.Collections.Generic;
 
 namespace Moq.Tests.Instrumentation
 {
-	public class InvocationFixture
+	public class InvocationFixture : IInstrumented
 	{
-		public IInterceptor __Interceptor;
-
 		public int Submit(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10)
 		{
-			if (__Interceptor != null)
+			if (Interceptor != null)
 			{
-				Console.WriteLine(__Interceptor);
+				Console.WriteLine(Interceptor);
 				return 2;
 			}
 
 			return a10;
 		}
 
-		public int Submit(string value1, out string value2, ref string value3, out int value4)
+		public int Submit(string value1, out string value2, ref string value3, out int value4, ref int value5)
 		{
 			int result = 5;
-			if (__Interceptor != null)
+			if (Interceptor!= null)
 			{
 				var args = new List<object>();
 				args.Add(value1);
@@ -49,7 +47,10 @@ namespace Moq.Tests.Instrumentation
 
 			value2 = "done";
 			value4 = 2;
+			value5 = 25;
 			return result;
 		}
+
+		public IInterceptor Interceptor { get; set; }
 	}
 }

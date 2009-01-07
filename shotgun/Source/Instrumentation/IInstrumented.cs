@@ -4,8 +4,8 @@ using System.ComponentModel;
 namespace Moq.Instrumentation
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public interface IInterceptor
+	public interface IInstrumented
 	{
-		bool Intercept(IInvocation invocation);
+		IInterceptor Interceptor { get; set; }
 	}
 }

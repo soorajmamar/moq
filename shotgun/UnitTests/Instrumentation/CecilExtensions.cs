@@ -60,20 +60,6 @@ namespace Mono.Cecil
 	/// <summary>
 	/// Mono Cecil API extensions.
 	/// </summary>
-	public static class TypeDefinitionExtensions
-	{
-		/// <summary>
-		/// Converts a <see cref="TypeDefinition"/> into a <see cref="TypeReference"/>.
-		/// </summary>
-		public static TypeReference ToReference(this TypeDefinition definition)
-		{
-			return new TypeReference(definition.Name, definition.Namespace, definition.Scope, definition.IsValueType);
-		}
-	}
-
-	/// <summary>
-	/// Mono Cecil API extensions.
-	/// </summary>
 	public static class CilWorkerExtensions
 	{
 		/// <summary>
