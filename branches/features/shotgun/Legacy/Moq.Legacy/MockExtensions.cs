@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Moq
 {
-	public static class IMockExtensions
+	public static class MockExtensions
 	{
 
 		/// <summary>

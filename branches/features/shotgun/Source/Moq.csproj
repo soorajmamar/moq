@@ -146,6 +146,7 @@
     <Compile Include="DefaultValue.cs" />
     <Compile Include="EventInfoCallback.cs" />
     <Compile Include="IDefaultValueProvider.cs" />
+    <Compile Include="Instrumentation\IInstrumented.cs" />
     <Compile Include="Instrumentation\IInterceptor.cs">
       <SubType>Code</SubType>
     </Compile>
