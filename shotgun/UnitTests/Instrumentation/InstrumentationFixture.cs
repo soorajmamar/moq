@@ -5,7 +5,7 @@ using System.Text;
 using Xunit;
 using System.IO;
 using Mono.Cecil;
-using System.Reflection;
+using SR = System.Reflection;
 using Mono.Cecil.Cil;
 using Moq.Instrumentation;
 
@@ -52,14 +52,14 @@ namespace Moq.Tests.Instrumentation
 			var asm = AssemblyFactory.GetAssembly(this.GetType().Assembly.Location);
 			var interceptorRef = asm.MainModule.Import(typeof(IInterceptor));
 			var typeTypeRef = asm.MainModule.Import(typeof(Type));
-			var getTypeFromHandle = asm.MainModule.Import(Reflect.GetMethod(() => Type.GetTypeFromHandle(new RuntimeTypeHandle())));
-			var methodBaseRef = asm.MainModule.Import(typeof(MethodBase));
-			var getCurrentMethod = asm.MainModule.Import(Reflect.GetMethod(() => MethodBase.GetCurrentMethod()));
+			var getTypeFromHandle = asm.MainModule.Import(SR.Reflect.GetMethod(() => Type.GetTypeFromHandle(new RuntimeTypeHandle())));
+			var methodBaseRef = asm.MainModule.Import(typeof(SR.MethodBase));
+			var getCurrentMethod = asm.MainModule.Import(SR.Reflect.GetMethod(() => SR.MethodBase.GetCurrentMethod()));
 			var listOfObject = asm.MainModule.Import(typeof(List<object>));
-			var listOfObjectCtor = asm.MainModule.Import(Reflect.GetConstructor(() => new List<object>()));
-			var addToList = asm.MainModule.Import(Reflect<List<object>>.GetMethod(l => l.Add(new object())));
+			var listOfObjectCtor = asm.MainModule.Import(SR.Reflect.GetConstructor(() => new List<object>()));
+			var addToList = asm.MainModule.Import(SR.Reflect<List<object>>.GetMethod(l => l.Add(new object())));
 			var invocationTypeRef = asm.MainModule.Import(typeof(Invocation));
-			var invocationCtor = asm.MainModule.Import(Reflect.GetConstructor(() => new Invocation(null, null, null, null, null)));
+			var invocationCtor = asm.MainModule.Import(SR.Reflect.GetConstructor(() => new Invocation(null, null, null, null, null)));
 			var iinstrumentedRef = asm.MainModule.Import(typeof(IInstrumented));
 
 			foreach (var type in asm.Modules.Cast<ModuleDefinition>().SelectMany(a => a.Types.Cast<TypeDefinition>())
@@ -69,13 +69,34 @@ namespace Moq.Tests.Instrumentation
 				// IInstrumented interface
 				type.Interfaces.Add(iinstrumentedRef);
 
-				// private IInterceptor __interceptor;
-				var interceptorDef = new FieldDefinition("__interceptor", interceptorRef, Mono.Cecil.FieldAttributes.Public);
+				// public IInterceptor Interceptor
+				var interceptorProp = new PropertyDefinition(SR.Reflect<IInstrumented>.GetProperty(r => r.Interceptor).Name,
+					interceptorRef, (PropertyAttributes)0);
+				// private IInterceptor __Interceptor;  /* Backing field */
+				var interceptorDef = new FieldDefinition("__" + interceptorProp.Name, interceptorRef, 
+					FieldAttributes.Public);
 				type.Fields.Add(interceptorDef);
-				// public IInterceptor Interceptor { get; set; }
-				var interceptorProp = new PropertyDefinition("Interceptor", interceptorRef, (Mono.Cecil.PropertyAttributes)0);
+				// { get { return __interceptor; }
+				interceptorProp.GetMethod = new MethodDefinition("get_" + interceptorProp.Name,
+					MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual,
+					interceptorRef);
+				interceptorProp.GetMethod.Body.CilWorker.AppendRange(
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Ldarg_0), 
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Ldfld, interceptorDef),
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Ret)
+				);
+				// { set { __interceptor = value; }
+				interceptorProp.SetMethod = new MethodDefinition("set_" + interceptorProp.Name,
+					MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual,
+					interceptorRef);
+				interceptorProp.GetMethod.Body.CilWorker.AppendRange(
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Ldarg_0),
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Ldarg_1),
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Stfld, interceptorDef),
+						interceptorProp.GetMethod.Body.CilWorker.Create(OpCodes.Ret)
+				);
+
 				type.Properties.Add(interceptorProp);
-				// TODO: add getter/setter
 
 				foreach (var method in type.Methods.Cast<MethodDefinition>())
 				{
@@ -181,7 +202,7 @@ namespace Moq.Tests.Instrumentation
 
 					// TODO: remove
 					instructions.Add(il.Create(OpCodes.Ldloc, invocationVar));
-					var cw = asm.MainModule.Import(Reflect.GetMethod(() => Console.WriteLine((object)null)));
+					var cw = asm.MainModule.Import(SR.Reflect.GetMethod(() => Console.WriteLine((object)null)));
 
 					instructions.Add(il.Create(OpCodes.Call, cw));
 

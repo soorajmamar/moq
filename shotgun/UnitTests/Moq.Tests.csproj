@@ -79,13 +79,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Lib\NetFx.Reflection\Reflect.cs">
+      <Link>Instrumentation\Reflect.cs</Link>
+    </Compile>
     <Compile Include="AsInterfaceFixture.cs" />
     <Compile Include="IlFixture.cs" />
     <Compile Include="Instrumentation\CecilExtensions.cs" />
     <Compile Include="Instrumentation\CecilExtensionsFixture.cs" />
     <Compile Include="Instrumentation\InstrumentationFixture.cs" />
     <Compile Include="Instrumentation\InvocationFixture.cs" />
-    <Compile Include="Instrumentation\Reflect.cs" />
     <Compile Include="RecursiveMocksFixture.cs" />
     <Compile Include="CallbacksFixture.cs" />
     <Compile Include="EmptyDefaultValueProviderFixture.cs" />
