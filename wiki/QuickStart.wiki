@@ -3,6 +3,8 @@
 
 Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly) and minimalistic.
 
+*NOTE*: If you're using Moq version 3.0b, all Expect methods have been renamed to Setup. We'll update as soon as 3.0 gets out of beta. Thanks!
+
 == Methods ==
 
 {{{
