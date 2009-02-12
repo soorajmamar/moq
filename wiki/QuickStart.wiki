@@ -269,6 +269,7 @@ public bool IsLarge(string arg)
   * [http://www.goneeded.com/javas/articles/20080324/a1811942466.html 
   * [http://weblogs.manas.com.ar/bcardiff/2008/04/improoved-argument-matchers-in-moq/ Improved argument matchers in Moq]
   * [http://www.madprops.org/blog/moq-triqs-successive-expectations/ Moq Triqs - Successive Expectations]
+  * [http://blog.decayingcode.com/2009/02/part-2-basic-of-mocking-with-moq.html Basic Mocking with Moq]
 
 
 ----
