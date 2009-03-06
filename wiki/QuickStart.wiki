@@ -161,6 +161,15 @@ mock.Setup(foo => foo.Execute("ping"))
 {{{
 mock.Verify(foo => foo.Execute("ping"));
 
+// Verify with custom error message for failure
+mock.Verify(foo => foo.Execute("ping"), "When doing operation X, the service should be pinged always");
+
+// Method should never be called
+mock.Verify(foo => foo.Execute("ping"), Times.Never());
+
+// Called at least once
+mock.Verify(foo => foo.Execute("ping"), Times.AtLeastOnce());
+
 mock.VerifyGet(foo => foo.Name);
 
 // Verify setter invocation, regardless of value.
