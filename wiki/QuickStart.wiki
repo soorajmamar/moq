@@ -1,47 +1,46 @@
 #labels Featured
 = Introduction to Moq =
 
-Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly) and minimalistic.
-
-*NOTE*: If you're using Moq version 3.0b, all Expect methods have been renamed to Setup. We'll update as soon as 3.0 gets out of beta. Thanks!
+Moq is intended to be simple to use, strong typed (no magic strings!, and therefore full compiler-verified and refactoring-friendly) and minimalistic (while still fully functional!).
 
 == Methods ==
 
 {{{
 var mock = new Mock<IFoo>();
-mock.Expect(foo => foo.Execute("ping")).Returns(true);
+mock.Setup(foo => foo.Execute("ping")).Returns(true);
 
 
 // out arguments
 var outString = "ack";
 // TryParse will return true, and the out argument will return "ack", lazy evaluated
-mock.Expect(foo => foo.TryParse("ping", out outString)).Returns(true);
+mock.Setup(foo => foo.TryParse("ping", out outString)).Returns(true);
 
 
 // ref arguments
 var instance = new Bar();
 // Only matches if the ref argument to the invocation is the same instance
-mock.Expect(foo => foo.Submit(ref instance)).Returns(true);
+mock.Setup(foo => foo.Submit(ref instance)).Returns(true);
 
 
 // access invocation arguments when returning a value
-mock.Expect(x => x.Execute(It.IsAny<string>()))
+mock.Setup(x => x.Execute(It.IsAny<string>()))
 		.Returns((string s) => s.ToLower());
+// Multiple parameters overloads available
 
 
 // throwing when invoked
-mock.Expect(foo => foo.Execute("reset")).Throws<InvalidOperationException>();
-mock.Expect(foo => foo.Execute("")).Throws(new ArgumentException("command");
+mock.Setup(foo => foo.Execute("reset")).Throws<InvalidOperationException>();
+mock.Setup(foo => foo.Execute("")).Throws(new ArgumentException("command");
 
 
 // lazy evaluating return value
-mock.Expect(foo => foo.Count()).Returns(() => count);
+mock.Setup(foo => foo.Count()).Returns(() => count);
 
 
 // returning different values on each invocation
 var mock = new Mock<IFoo>();
 var calls = 0;
-mock.Expect(foo => foo.Execute("ping"))
+mock.Setup(foo => foo.Execute("ping"))
     .Returns(() => calls)
     .Callback(() => calls++);
 // returns 0 on first invocation, 1 on the next, and so on
@@ -53,41 +52,44 @@ Console.WriteLine(mock.Object.Execute("ping"));
 
 {{{
 // any value
-mock.Expect(foo => foo.Execute(It.IsAny<string>())).Returns(true);
+mock.Setup(foo => foo.Execute(It.IsAny<string>())).Returns(true);
 
 
 // matching Func<int>, lazy evaluated
-mock.Expect(foo => foo.Add(It.Is<int>(i => i % 2 == 0))).Returns(true); 
+mock.Setup(foo => foo.Add(It.Is<int>(i => i % 2 == 0))).Returns(true); 
 
 
 // matching ranges
-mock.Expect(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive))).Returns(true); 
+mock.Setup(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive))).Returns(true); 
 
 
 // matching regex
-mock.Expect(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
+mock.Setup(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
 }}}
 
 == Properties ==
 
 {{{
-mock.Expect(foo => foo.Name).Returns("bar");
+mock.Setup(foo => foo.Name).Returns("bar");
 
 
 // auto-mocking hierarchies (a.k.a. recursive mocks)
-mock.Expect(foo => foo.Bar.Baz.Name).Returns("baz");
+mock.Setup(foo => foo.Bar.Baz.Name).Returns("baz");
 
+// expects an invocation to set the value to "foo"
+mock.SetupSet(foo => foo.Name = "foo");
 
-mock.ExpectSet(foo => foo.Name, "foo" /* expected value */);
+// or verify the setter directly
+mock.VerifySet(foo => foo.Name = "foo");
 }}}
 
-  * Stub a property so that it will automatically start tracking its value:
+  * Setup a property so that it will automatically start tracking its value:
 {{{
 // start "tracking" sets/gets to this property
-mock.Stub(f => f.Name);
+mock.SetupProperty(f => f.Name);
 
 // alternatively, provide a default value for the stubbed property
-mock.Stub(f => f.Name, "foo");
+mock.SetupProperty(f => f.Name, "foo");
 
 
 // Now you can do:
@@ -101,24 +103,12 @@ foo.Name = "bar";
 Assert.Equal("bar", foo.Name);
 }}}
 
-  * Stub all properties on a mock:
+  * Stub all properties on a mock (not available on Silverlight):
 {{{
-mock.StubAll();
+mock.SetupAllProperties();
 }}}
 
 == Events ==
-{{{
-var handler = mock.CreateEventHandler<FooArgs>();
-// Associate the handler with the event we'll raise
-view.Object.FooSelected += handler;
-
-// Raise the event
-handler.Raise(new FooArgs { Value = "foo" });
-
-// Causing the event to raise automatically when Submit is invoked
-mock.Expect(foo => foo.Submit()).Raises(handler, new FooArgs { Value = "foo" });
-}}}
-Moq vNext (3.0) will implement a much easier syntax for events:
 {{{
 // Raising an event on the mock
 mock.Raise(m => m.FooEvent += null, new FooEventArgs(fooValue));
@@ -127,28 +117,40 @@ mock.Raise(m => m.FooEvent += null, new FooEventArgs(fooValue));
 mock.Raise(m => m.Child.First.FooEvent += null, new FooEventArgs(fooValue));
 
 // Causing an event to raise automatically when Submit is invoked
-mock.Expect(foo => foo.Submit()).Raises(f => f.Sent += null, EventArgs.Empty);
+mock.Setup(foo => foo.Submit()).Raises(f => f.Sent += null, EventArgs.Empty);
 // The raised event would trigger behavior on the object under test, which 
 // you would make assertions about later (how its state changed as a consequence, typically)
+
+// Raising a custom event which does not adhere to the EventHandler pattern
+public delegate void MyEventHandler(int i, bool b);
+public interface IFoo
+{
+  event MyEventHandler MyEvent; 
+}
+
+var mock = new Mock<IFoo>();
+...
+// Raise passing the custom arguments expected by the event delegate
+mock.Raise(foo => foo.MyEvent += null, 25, true);
 }}}
 
 ==Callbacks==
 
 {{{
 var mock = new Mock<IFoo>();
-mock.Expect(foo => foo.Execute("ping"))
+mock.Setup(foo => foo.Execute("ping"))
     .Returns(true)
     .Callback(() => calls++);
 
 
 // access invocation arguments
-mock.Expect(foo => foo.Execute(It.IsAny<string>()))
+mock.Setup(foo => foo.Execute(It.IsAny<string>()))
     .Returns(true)
     .Callback((string s) => calls.Add(s));
 
 
 // callbacks can be specified before and after invocation
-mock.Expect(foo => foo.Execute("ping"))
+mock.Setup(foo => foo.Execute("ping"))
     .Callback(() => Console.WriteLine("Before returns"))
     .Returns(true)
     .Callback(() => Console.WriteLine("After returns"));
@@ -158,8 +160,18 @@ mock.Expect(foo => foo.Execute("ping"))
 
 {{{
 mock.Verify(foo => foo.Execute("ping"));
+
 mock.VerifyGet(foo => foo.Name);
-mock.VerifySet(foo => foo.Name, "foo");
+
+// Verify setter invocation, regardless of value.
+mock.VerifySet(foo => foo.Name);
+
+// Verify setter called with specific value
+mock.VerifySet(foo => foo.Name ="foo");
+
+// Verify setter with an argument matcher
+mock.VerifySet(foo => foo.Value = It.IsInRange(1, 5, Range.Inclusive));
+
 }}}
 
 == Customizing Mock Behavior ==
@@ -171,13 +183,13 @@ var mock = new Mock<IFoo>(MockBehavior.Strict);
 
 
 
-  * Invoke base class implementation if no expectation overrides the member (a.k.a. "Partial Mocks" in Rhino Mocks)
+  * Invoke base class implementation if no expectation overrides the member (a.k.a. "Partial Mocks" in Rhino Mocks): default it false
 {{{
 var mock = new Mock<IFoo> { CallBase = true };
 }}}
 
 
-  * Make an automatic recursive mock: a mock that will return a new mock for every member that doesn't have an expectation and whose return value can be mocked
+  * Make an automatic recursive mock: a mock that will return a new mock for every member that doesn't have an expectation and whose return value can be mocked (i.e. it is not a value type)
 {{{
 var mock = new Mock<IFoo> { DefaultValue = DefaultValue.Mock };
 // default is DefaultValue.Empty
@@ -189,7 +201,7 @@ IBar value = mock.Object.Bar;
 // the same mock instance. this allows us to also use this instance to 
 // set further expectations on it if we want
 var barMock = Mock.Get(value);
-barMock.Expect(b => b.Submit()).Returns(true);
+barMock.Setup(b => b.Submit()).Returns(true);
 }}}
 
 
@@ -218,12 +230,13 @@ using Moq.Protected()
 // in the test
 var mock = new Mock<CommandBase>();
 mock.Protected()
-     .Expect<int>("Execute")
+     .Setup<int>("Execute")
      .Returns(5);
 
 // if you need argument matching, you MUST use ItExpr rather than It
+// planning on improving this for vNext
 mock.Protected()
-    .Expect<string>("Execute",
+    .Setup<string>("Execute",
         ItExpr.IsAny<string>())
     .Returns(true);
 }}}
@@ -232,29 +245,25 @@ mock.Protected()
 
 {{{
 // get mock from a mocked instance
-IFoo foo = // get instance somehow
+IFoo foo = // get mock instance somehow
 var fooMock = Mock.Get(foo);
-fooMock.Expect(f => f.Submit()).Returns(true);
+fooMock.Setup(f => f.Submit()).Returns(true);
 
 
 // implementing multiple interfaces in mock
 var foo = new Mock<IFoo>();
 var disposableFoo = foo.As<IDisposable>();
 // now the IFoo mock also implements IDisposable :)
-disposableFoo.Expect(df => df.Dispose());
+disposableFoo.Setup(df => df.Dispose());
 
 
 // custom matchers
-mock.Expect(foo => foo.Submit(IsLarge())).Throws<ArgumentException>();
+mock.Setup(foo => foo.Submit(IsLarge())).Throws<ArgumentException>();
 ...
-[Matcher]
-public string IsLarge() { return null; }
-public bool IsLarge(string arg)
+public string IsLarge() 
 { 
-  return !String.IsNullOrEmpty(arg) && arg.Length > 100;
+  return Match<string>.Create(s => !String.IsNullOrEmpty(s) && s.Length > 100);
 }
-
-
 }}}
 
 
@@ -267,7 +276,7 @@ public bool IsLarge(string arg)
   * [http://geekswithblogs.net/liammclennan/archive/2008/05/09/122007.aspx Comparing Moq to Rhino Mocks]
   * [http://www.hanselman.com/blog/MoqLinqLambdasAndPredicatesAppliedToMockObjects.aspx Moq: Linq, Lambdas and Predicates applied to Mock Objects]
   * [http://www.goneeded.com/javas/articles/20080324/a1811942466.html 
-  * [http://weblogs.manas.com.ar/bcardiff/2008/04/improoved-argument-matchers-in-moq/ Improved argument matchers in Moq]
+  * [http://weblogs.manas.com.ar/bcardiff/2009/02/reimproved-argument-matchers-in-moq/ Improved argument matchers in Moq]
   * [http://www.madprops.org/blog/moq-triqs-successive-expectations/ Moq Triqs - Successive Expectations]
   * [http://blog.decayingcode.com/2009/02/part-2-basic-of-mocking-with-moq.html Basic Mocking with Moq]
 
@@ -275,4 +284,4 @@ public bool IsLarge(string arg)
 ----
 *Note*: when you need to pass the mock for consumption, you must use the `mock.Object` accessor as a consequence of a C# compiler restriction (vote to get it removed [https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=318122 at Microsoft Connect])
 
-Head on to the [http://www.clariusconsulting.net/labs/moq/index.html API documentation], [http://code.google.com/p/moq/downloads/list download it] and have fun! Engage in the [http://groups.google.com/group/moqdisc discussion group] to give us feedback, share your experiences or wishes for vNext!
+Head on to the [http://api.moq.me API documentation], [http://moq.me/get download it] and have fun! Engage in the [http://groups.google.com/group/moqdisc discussion group] to give us feedback, share your experiences or wishes for vNext!
