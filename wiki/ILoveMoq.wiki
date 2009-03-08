@@ -13,3 +13,19 @@ So here goes some aggregate data that you can build yourself from the [http://co
 Total downloads per version vary as they have been out for different spans of time, but the adoption is steady and fast-growing :). If you aggregate the entire 2.x wave, we've had more than 13k downloads! We hope v3.x wave will make even more strides.
 
 = What users say =
+
+"[http://twitter.com/nkohari/statuses/1288650267 nkohari]: @jbogard Moq taught me mocking when Rhino couldn't"
+
+"[http://twitter.com/nikhilk/statuses/1287389023 nikhilk]: @kzu Great! Really liked moq on server, and looking forward to using it in SL. Thanks for the heads up; hope to check it out this weekend..."
+
+"[http://twitter.com/EtienneT/statuses/1284448929 EtienneT]: Using Moq mocking framework for the first time! I like it!"
+
+"[http://twitter.com/lboffi/statuses/1258968723 lboffi]: @ajlopez I'm starting to use moq and I'm getting in love."
+
+"[http://twitter.com/scottdensmore/statuses/1243355029 scottdensmore]: @markdstafford I love Moq. Used RhinoMocks in the past, yet people seem to pick up Moq easier. Seems to have less friction."
+
+"[http://twitter.com/dingwallr/statuses/1242069546 dingwallr]: Out with Rhino.Mocks, in with Moq :)"
+
+"[http://twitter.com/thomasjo/statuses/1231214270 thomasjo]: Oh Moq, how I love thee! I'm really excited about Funq as well, but curious when I can get my filthy hands on it..."
+
+"[http://twitter.com/jarodferguson/statuses/1227620443 jarodferguson]: switched to MOQ almost a year ago, never looked back"
