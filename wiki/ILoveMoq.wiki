@@ -22,6 +22,10 @@ Total downloads per version vary as they have been out for different spans of ti
 
 "[http://twitter.com/lboffi/statuses/1258968723 lboffi]: @ajlopez I'm starting to use moq and I'm getting in love."
 
+"[http://twitter.com/TimNew/statuses/1304691509 TimNew]: Moq is really powerful and useful, esp in TDD. Moq can easily provide an simulation environment for the class to be tested."
+
+"[http://twitter.com/havardstranden/statuses/1302655024 havardstranden]: Loving Moq. Extremely easy to use, stays out of my way, and gives me what I need."
+
 "[http://twitter.com/scottdensmore/statuses/1243355029 scottdensmore]: @markdstafford I love Moq. Used RhinoMocks in the past, yet people seem to pick up Moq easier. Seems to have less friction."
 
 "[http://twitter.com/dingwallr/statuses/1242069546 dingwallr]: Out with Rhino.Mocks, in with Moq :)"
