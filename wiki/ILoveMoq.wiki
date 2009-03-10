@@ -1,4 +1,4 @@
-#summary Some adoption chartsWhat Moq users have to say, and !
+#summary Some adoption charts and what Moq users have to say!
 #labels Featured
 
 = Introduction =
