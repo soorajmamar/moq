@@ -83,7 +83,7 @@ mock.SetupSet(foo => foo.Name = "foo");
 mock.VerifySet(foo => foo.Name = "foo");
 }}}
 
-  * Setup a property so that it will automatically start tracking its value:
+  * Setup a property so that it will automatically start tracking its value (also known as Stub):
 {{{
 // start "tracking" sets/gets to this property
 mock.SetupProperty(f => f.Name);
