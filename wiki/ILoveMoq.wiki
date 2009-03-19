@@ -14,6 +14,8 @@ Total downloads per version vary as they have been out for different spans of ti
 
 = What users say =
 
+"[http://twitter.com/cprieto/statuses/1352165322 cprieto]: #moq 3 is simply AMAZING!! It has everything I ever wanted in a mocking framework... congrats @kzu and team for the release!"
+
 "[http://twitter.com/nkohari/statuses/1288650267 nkohari]: @jbogard Moq taught me mocking when Rhino couldn't"
 
 "[http://twitter.com/nikhilk/statuses/1287389023 nikhilk]: @kzu Great! Really liked moq on server, and looking forward to using it in SL. Thanks for the heads up; hope to check it out this weekend..."
