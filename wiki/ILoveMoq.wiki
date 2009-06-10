@@ -14,7 +14,9 @@ Total downloads per version vary as they have been out for different spans of ti
 
 = What users say =
 
-"[http://twitter.com/NeilRobbins/statuses/1532901527 NeilRobbins]: @robcthegeek @Imaji @caseycharlton Tried Moq the other day on the train with no documentation and was happily doing AAA tests in minutes
+"[http://twitter.com/agileguy/statuses/2080807004 Daniel Elliott]: @kzu For Moq; my most heartfelt thanks. < 20 seconds and I am writing expectations! #genius"
+
+"[http://twitter.com/NeilRobbins/statuses/1532901527 NeilRobbins]: @robcthegeek @Imaji @caseycharlton Tried Moq the other day on the train with no documentation and was happily doing AAA tests in minutes"
 
 "[http://twitter.com/cprieto/statuses/1352165322 cprieto]: #moq 3 is simply AMAZING!! It has everything I ever wanted in a mocking framework... congrats @kzu and team for the release!"
 
