@@ -51,7 +51,7 @@ namespace Moq
 	/// <include file='Mock.Generic.xdoc' path='docs/doc[@for="Mock{T}"]/*'/>
 	public partial class Mock<T> : Mock where T : class
 	{
-		private static IProxyFactory proxyFactory = new CastleProxyFactory();
+		private static IProxyFactory proxyFactory = new ProxyFactory();
 		private T instance;
 		private object[] constructorArguments;
 
