@@ -42,8 +42,9 @@ using System;
 
 namespace Moq.Proxy
 {
-	internal interface IProxyFactory
-	{
-		T CreateProxy<T>(ICallInterceptor interceptor, Type[] interfaces, object[] arguments);
-	}
+		internal interface IProxyFactory
+		{
+				T CreateProxy<T>(ICallInterceptor interceptor, Type[] interfaces, object[] arguments)
+					where T : class;
+		}
 }

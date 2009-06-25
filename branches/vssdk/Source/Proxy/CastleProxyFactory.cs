@@ -47,105 +47,106 @@ using Moq.Properties;
 
 namespace Moq.Proxy
 {
-	internal class CastleProxyFactory : IProxyFactory
-	{
-		private static readonly ProxyGenerator generator = new ProxyGenerator();
-
-		public T CreateProxy<T>(ICallInterceptor interceptor, Type[] interfaces, object[] arguments)
+		internal class ProxyFactory : IProxyFactory
 		{
-			var mockType = typeof(T);
+				private static readonly ProxyGenerator generator = new ProxyGenerator();
 
-			if (mockType.IsInterface)
-			{
-				return (T)generator.CreateInterfaceProxyWithoutTarget(
-					mockType,
-					interfaces,
-					new Interceptor(interceptor));
-			}
-			else
-			{
-				try
+				public T CreateProxy<T>(ICallInterceptor interceptor, Type[] interfaces, object[] arguments)
+						where T : class
 				{
-					if (arguments.Length > 0)
-					{
-						var generatedType = generator.ProxyBuilder.CreateClassProxy(
-							mockType,
-							interfaces,
-							new ProxyGenerationOptions());
-						return (T)Activator.CreateInstance(
-							generatedType,
-							new object[] { new IInterceptor[] { new Interceptor(interceptor) } }
-							.Concat(arguments).ToArray());
-					}
+						var mockType = typeof(T);
 
-					return (T)generator.CreateClassProxy(mockType, interfaces, new Interceptor(interceptor));
+						if (mockType.IsInterface)
+						{
+								return (T)generator.CreateInterfaceProxyWithoutTarget(
+									mockType,
+									interfaces,
+									new Interceptor(interceptor));
+						}
+						else
+						{
+								try
+								{
+										if (arguments.Length > 0)
+										{
+												var generatedType = generator.ProxyBuilder.CreateClassProxy(
+													mockType,
+													interfaces,
+													new ProxyGenerationOptions());
+												return (T)Activator.CreateInstance(
+													generatedType,
+													new object[] { new IInterceptor[] { new Interceptor(interceptor) } }
+													.Concat(arguments).ToArray());
+										}
+
+										return (T)generator.CreateClassProxy(mockType, interfaces, new Interceptor(interceptor));
+								}
+								catch (TypeLoadException tle) // TODO put in the upper method ?
+								{
+										throw new ArgumentException(Resources.InvalidMockClass, tle);
+								}
+								catch (MissingMethodException mme)
+								{
+										throw new ArgumentException(Resources.ConstructorNotFound, mme);
+								}
+						}
 				}
-				catch (TypeLoadException tle) // TODO put in the upper method ?
+
+				private class Interceptor : IInterceptor
 				{
-					throw new ArgumentException(Resources.InvalidMockClass, tle);
+						private ICallInterceptor interceptor;
+
+						internal Interceptor(ICallInterceptor interceptor)
+						{
+								this.interceptor = interceptor;
+						}
+
+						public void Intercept(IInvocation invocation)
+						{
+								var context = new CallContext(invocation);
+								this.interceptor.Intercept(context);
+						}
 				}
-				catch (MissingMethodException mme)
+
+				private class CallContext : ICallContext
 				{
-					throw new ArgumentException(Resources.ConstructorNotFound, mme);
+						private IInvocation invocation;
+
+						internal CallContext(IInvocation invocation)
+						{
+								this.invocation = invocation;
+						}
+
+						public object[] Arguments
+						{
+								get { return this.invocation.Arguments; }
+						}
+
+						public MethodInfo Method
+						{
+								get { return this.invocation.Method; }
+						}
+
+						public object ReturnValue
+						{
+								get { return this.invocation.ReturnValue; }
+								set { this.invocation.ReturnValue = value; }
+						}
+
+						public Type TargetType
+						{
+								get { return this.invocation.TargetType; }
+						}
+
+						public void InvokeBase()
+						{
+								this.invocation.Proceed();
+						}
+
+						public void SetArgumentValue(int index, object value)
+						{
+								this.invocation.SetArgumentValue(index, value);
+						}
 				}
-			}
 		}
-
-		private class Interceptor : IInterceptor
-		{
-			private ICallInterceptor interceptor;
-
-			internal Interceptor(ICallInterceptor interceptor)
-			{
-				this.interceptor = interceptor;
-			}
-
-			public void Intercept(IInvocation invocation)
-			{
-				var context = new CallContext(invocation);
-				this.interceptor.Intercept(context);
-			}
-		}
-
-		private class CallContext : ICallContext
-		{
-			private IInvocation invocation;
-
-			internal CallContext(IInvocation invocation)
-			{
-				this.invocation = invocation;
-			}
-
-			public object[] Arguments
-			{
-				get { return this.invocation.Arguments; }
-			}
-
-			public MethodInfo Method
-			{
-				get { return this.invocation.Method; }
-			}
-
-			public object ReturnValue
-			{
-				get { return this.invocation.ReturnValue; }
-				set { this.invocation.ReturnValue = value; }
-			}
-
-			public Type TargetType
-			{
-				get { return this.invocation.TargetType; }
-			}
-
-			public void InvokeBase()
-			{
-				this.invocation.Proceed();
-			}
-
-			public void SetArgumentValue(int index, object value)
-			{
-				this.invocation.SetArgumentValue(index, value);
-			}
-		}
-	}
 }
