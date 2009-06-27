@@ -271,13 +271,22 @@ namespace Moq
 		{
 			var lambda = expression.ToLambda();
 			var prop = lambda.ToPropertyInfo();
-
-			var expected = new MethodCallReturn<T, TProperty>(
-				mock,
-				expression,
-				prop.GetGetMethod(),
-				new Expression[0]) { FailMessage = failMessage };
-			VerifyCalls(GetInterceptor(lambda, mock), expected, expression, times);
+			if (!prop.IsIndexed())
+			{
+				var expected = new MethodCallReturn<T, TProperty>(
+					mock,
+					expression,
+					prop.GetGetMethod(),
+					new Expression[0]) { FailMessage = failMessage };
+				VerifyCalls(GetInterceptor(lambda, mock), expected, expression, times);
+			}
+			else
+			{
+				var keys = (lambda.Body as MethodCallExpression).Arguments;
+				var expected = new MethodCall<T>(mock, expression, prop.GetGetMethod(),
+					keys.ToArray()) { FailMessage = failMessage };
+				VerifyCalls(GetInterceptor(lambda, mock), expected, expression, times);
+			}
 		}
 
 		internal static void VerifySet<T, TProperty>(
@@ -289,9 +298,19 @@ namespace Moq
 		{
 			var lambda = expression.ToLambda();
 			var prop = lambda.ToPropertyInfo();
-
-			var expected = new SetterMethodCall<T, TProperty>(mock, expression, prop.GetSetMethod()) { FailMessage = failMessage };
-			VerifyCalls(GetInterceptor(lambda, mock), expected, expression, times);
+			if (!prop.IsIndexed())
+			{
+				var expected = new SetterMethodCall<T, TProperty>(mock, expression, prop.GetSetMethod()) { FailMessage = failMessage };
+				VerifyCalls(GetInterceptor(lambda, mock), expected, expression, times);
+			}
+			else
+			{
+				var keys = (lambda.Body as MethodCallExpression).Arguments;
+				var expected = new MethodCall<T>(mock, expression, prop.GetSetMethod(),
+					keys.Concat(new[] { Moq.Protected.ItExpr.IsAny<TProperty>() }).ToArray()
+					) { FailMessage = failMessage };
+				VerifyCalls(GetInterceptor(lambda, mock), expected, expression, times);
+			}
 		}
 
 		internal static void VerifySet<T, TProperty>(

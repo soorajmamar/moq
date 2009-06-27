@@ -100,7 +100,37 @@ namespace Moq.Tests
 			Assert.Equal(bar, m.Object[4]);
 		}
 
-		// VerifyGet
-		// VerifySet
+		[Fact]
+		public void ShouldVerifyGet()
+		{
+			m.SetupProperty(x => x[It.IsAny<string>()]);
+			m.Object["key"] = bar;
+			var r = m.Object["key"];
+			m.VerifyGet(x => x["key"]);
+		}
+
+		[Fact]
+		public void ShouldNotVerifyGet()
+		{
+			m.SetupProperty(x => x[It.IsAny<string>()]);
+			Assert.Throws<MockException>(() => m.VerifyGet(x => x["key"]));
+		}
+
+		[Fact]
+		public void ShouldVerifySet()
+		{
+			m.SetupProperty(x => x[It.IsAny<string>()]);
+			m.Object["key"] = bar;
+			m.VerifySet(x => x["key"] = bar);
+			m.VerifySet(x => x["key"]);
+		}
+
+		[Fact]
+		public void ShouldNotVerifySet()
+		{
+			m.SetupProperty(x => x[It.IsAny<string>()]);
+			Assert.Throws<MockException>(() => m.VerifySet(x => x["key"]));
+			Assert.Throws<MockException>(() => m.VerifySet(x => x["key"] = bar));
+		}
 	}
 }
