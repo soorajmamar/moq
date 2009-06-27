@@ -41,6 +41,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Moq.Language.Flow;
@@ -199,21 +200,43 @@ namespace Moq
 			}
 			else
 			{
-				// HACK single indexed properties
-				// TODO fail nicely if IndexParameters().Count > 0
-				Type keyType = property.ToLambda().ToPropertyInfo().GetIndexParameters()[0].ParameterType;
-				var genericSetupMethod = this.GetType().GetMethod("SetupIndexProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-				var setupMethod = genericSetupMethod.MakeGenericMethod(typeof(TProperty), keyType);
-				setupMethod.Invoke(this, new object[] { property, initialValue });
+				// NB: initialValue is not used.
+				var keyTypes = property.ToLambda().ToPropertyInfo().GetIndexParameters().Select(x => x.ParameterType).ToArray();
+				// There are SetupIndexProperty{Count of Keys} method that 
+				// implement the behavior of the indexed property.
+				// we call it using reflection since we can't express the TKey_i
+				var genericSetupMethod = this.GetType().GetMethod(
+					string.Format("SetupIndexProperty{0}", keyTypes.Count()),
+					BindingFlags.NonPublic | BindingFlags.Instance
+				);
+				if (genericSetupMethod == null)
+					throw new NotSupportedException();
+				var setupMethod = genericSetupMethod.MakeGenericMethod(new[] { typeof(TProperty) }.Concat(keyTypes).ToArray());
+				setupMethod.Invoke(this, new object[] { property });
 			}
 		}
 
-		private void SetupIndexProperty<TProperty, TKey>(Expression<Func<T, TProperty>> property, TProperty initialValue)
+		private void SetupIndexProperty1<TProperty, TKey>(Expression<Func<T, TProperty>> property)
 		{
 			var values = new Dictionary<TKey, TProperty>();
 			(SetupGet(property) as Moq.Language.IReturns<T, TProperty>)
-				.Returns((TKey key) => (TProperty)values[key]);
+				.Returns((TKey key) => values[key]);
 			SetupSet<T, TProperty>(this, property).Callback((TKey key, TProperty value) => { values[key] = value; });
+		}
+
+		private void SetupIndexProperty2<TProperty, TKey1, TKey2>(Expression<Func<T, TProperty>> property)
+		{
+			var values = new Dictionary<TKey1, Dictionary<TKey2, TProperty>>();
+			Func<TKey1, Dictionary<TKey2, TProperty>> safeValues = (TKey1 key1) =>
+			{
+				Dictionary<TKey2, TProperty> res;
+				if (!values.TryGetValue(key1, out res))
+					values[key1] = res = new Dictionary<TKey2, TProperty>();
+				return res;
+			};
+			(SetupGet(property) as Moq.Language.IReturns<T, TProperty>)
+				.Returns((TKey1 key1, TKey2 key2) => safeValues(key1)[key2]);
+			SetupSet<T, TProperty>(this, property).Callback((TKey1 key1, TKey2 key2, TProperty value) => { safeValues(key1)[key2] = value; });
 		}
 
 #if !SILVERLIGHT
