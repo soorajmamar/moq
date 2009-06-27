@@ -39,6 +39,7 @@
 // http://www.opensource.org/licenses/bsd-license.php]
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Moq.Language.Flow;
@@ -51,6 +52,11 @@ namespace Moq
 	{
 		public SetterMethodCall(Mock mock, Expression originalExpression, MethodInfo method)
 			: base(mock, originalExpression, method, new[] { ItExpr.IsAny<TProperty>() })
+		{
+		}
+
+		public SetterMethodCall(Mock mock, Expression originalExpression, MethodInfo method, Expression[] indexes)
+			: base(mock, originalExpression, method, indexes.Concat(new[] { ItExpr.IsAny<TProperty>() }).ToArray())
 		{
 		}
 

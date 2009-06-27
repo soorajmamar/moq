@@ -109,6 +109,12 @@ namespace Moq
 				}
 			}
 
+			// indexed properties
+			var call = expression.Body as MethodCallExpression;
+			var indexedPropertyInfo = call.Object.Type.GetProperty("Item", call.Arguments.Select(arg => arg.Type).ToArray());
+			if (indexedPropertyInfo != null && call.Method == indexedPropertyInfo.GetGetMethod())
+				return indexedPropertyInfo;
+
 			throw new ArgumentException(String.Format(CultureInfo.CurrentCulture,
 				Properties.Resources.SetupNotProperty, expression.ToStringFixed()));
 		}

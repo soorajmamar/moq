@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="AsInterfaceFixture.cs" />
     <Compile Include="CustomMatcherFixture.cs" />
+    <Compile Include="IndexedPropertyFixture.cs" />
     <Compile Include="PropertiesFixture.cs" />
     <Compile Include="RecursiveMocksFixture.cs" />
     <Compile Include="CallbacksFixture.cs" />

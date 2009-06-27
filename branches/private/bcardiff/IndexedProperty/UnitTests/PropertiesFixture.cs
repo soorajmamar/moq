@@ -14,14 +14,6 @@ namespace Moq.Tests
 		}
 
 		[Fact]
-		public void ShouldThrowIfSetupSetIndexer()
-		{
-			var foo = new Mock<IIndexedFoo>();
-
-			Assert.Throws<ArgumentException>(() => foo.SetupSet(f => f[0]));
-		}
-
-		[Fact]
 		public void ShouldSetIndexer()
 		{
 			var foo = new Mock<IIndexedFoo>(MockBehavior.Strict);

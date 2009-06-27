@@ -168,6 +168,11 @@ namespace Moq
 			return false;
 		}
 
+		public static bool IsIndexed(this PropertyInfo property)
+		{
+			return property.GetIndexParameters().Length > 0;
+		}
+
 		public static EventInfo GetEvent<TMock>(this Action<TMock> eventExpression, TMock mock)
 			where TMock : class
 		{
