@@ -193,21 +193,27 @@ namespace Moq
 		{
 			if (!property.ToLambda().ToPropertyInfo().IsIndexed())
 			{
-			TProperty value = initialValue;
-			SetupGet(property).Returns(() => value);
-			SetupSet<T, TProperty>(this, property).Callback(p => value = p);
-		}
+				TProperty value = initialValue;
+				SetupGet(property).Returns(() => value);
+				SetupSet<T, TProperty>(this, property).Callback(p => value = p);
+			}
 			else
 			{
 				// HACK single indexed properties
 				// TODO fail nicely if IndexParameters().Count > 0
-				Type indexType = property.ToLambda().ToPropertyInfo().GetIndexParameters()[0].ParameterType;
-				var values = (System.Collections.IDictionary) Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(indexType, typeof(TProperty)));
-				var indexParam = Expression.Parameter(indexType, "index");
-				(SetupGet(property) as Moq.Language.IReturns<T, TProperty>)
-					.Returns((string key) => (TProperty) values[key]);
-				SetupSet<T, TProperty>(this, property).Callback((string key, TProperty value) => { values[key] = value; });
+				Type keyType = property.ToLambda().ToPropertyInfo().GetIndexParameters()[0].ParameterType;
+				var genericSetupMethod = this.GetType().GetMethod("SetupIndexProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+				var setupMethod = genericSetupMethod.MakeGenericMethod(typeof(TProperty), keyType);
+				setupMethod.Invoke(this, new object[] { property, initialValue });
 			}
+		}
+
+		private void SetupIndexProperty<TProperty, TKey>(Expression<Func<T, TProperty>> property, TProperty initialValue)
+		{
+			var values = new Dictionary<TKey, TProperty>();
+			(SetupGet(property) as Moq.Language.IReturns<T, TProperty>)
+				.Returns((TKey key) => (TProperty)values[key]);
+			SetupSet<T, TProperty>(this, property).Callback((TKey key, TProperty value) => { values[key] = value; });
 		}
 
 #if !SILVERLIGHT
