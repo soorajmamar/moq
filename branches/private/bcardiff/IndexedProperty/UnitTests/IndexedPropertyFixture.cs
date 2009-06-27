@@ -92,6 +92,14 @@ namespace Moq.Tests
 			Assert.Throws<MockException>(() => { var r = m.Object["other-key"]; });
 		}
 
+		[Fact]
+		public void SetupIndexedPropertyKeyAllowGetAndSetOnIntKeyedProperties()
+		{
+			m.SetupProperty(x => x[It.IsAny<int>()]);
+			m.Object[4] = bar;
+			Assert.Equal(bar, m.Object[4]);
+		}
+
 		// VerifyGet
 		// VerifySet
 	}
