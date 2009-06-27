@@ -191,9 +191,23 @@ namespace Moq
 		[SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Property", Justification = "We're setting up a property, so it's appropriate.")]
 		public void SetupProperty<TProperty>(Expression<Func<T, TProperty>> property, TProperty initialValue)
 		{
+			if (!property.ToLambda().ToPropertyInfo().IsIndexed())
+			{
 			TProperty value = initialValue;
 			SetupGet(property).Returns(() => value);
 			SetupSet<T, TProperty>(this, property).Callback(p => value = p);
+		}
+			else
+			{
+				// HACK single indexed properties
+				// TODO fail nicely if IndexParameters().Count > 0
+				Type indexType = property.ToLambda().ToPropertyInfo().GetIndexParameters()[0].ParameterType;
+				var values = (System.Collections.IDictionary) Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(indexType, typeof(TProperty)));
+				var indexParam = Expression.Parameter(indexType, "index");
+				(SetupGet(property) as Moq.Language.IReturns<T, TProperty>)
+					.Returns((string key) => (TProperty) values[key]);
+				SetupSet<T, TProperty>(this, property).Callback((string key, TProperty value) => { values[key] = value; });
+			}
 		}
 
 #if !SILVERLIGHT

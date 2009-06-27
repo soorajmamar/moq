@@ -472,12 +472,14 @@ namespace Moq
 			where T1 : class
 		{
 			var prop = expression.ToLambda().ToPropertyInfo();
+			var indexes = !prop.IsIndexed() ? new Expression[0] : ((MethodCallExpression)expression.Body).Arguments.ToArray();
+
 			ThrowIfPropertyNotWritable(prop);
 
 			var propSet = prop.GetSetMethod(true);
 			ThrowIfCantOverride(expression, propSet);
 
-			var call = new SetterMethodCall<T1, TProperty>(mock, expression, propSet);
+			var call = new SetterMethodCall<T1, TProperty>(mock, expression, propSet, indexes);
 			var targetInterceptor = GetInterceptor(expression, mock);
 
 			targetInterceptor.AddCall(call, SetupKind.PropertySet);
