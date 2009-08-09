@@ -27,24 +27,31 @@ namespace Moq.Linq
 			var fooMock = new Mock<IFoo>(MockBehavior.Strict);
 			fooMock.Setup(f => f.Bar.Baz("hey").Value).Returns(5);
 
-			fooMock.Setup(f => f.Bar.Baz("hey").Value).Returns(5);
-
-
 			var expression = ToExpression<IFoo, int>(f => f.Bar.Baz("hey").Value);
 
 			var factory = new MockFactory(MockBehavior.Strict);
-			var foo = factory
-				.Create<IFoo>()
-				.Setup(f => f.Bar)
+			var baz = factory
+				.Create<IBaz>()
+				.Setup(z => z.Value)
+				.Returns(5)
+				.AsMock();
+
+			var bar = factory
+				.Create<IBar>()
+				.Setup(b => b.Baz("hey"))
+				.Returns(baz)
+				.AsMock();
+
+			fooMock.Setup(f => f.Bar).Returns(bar);
+
+			// For linq querying we need something different.
+			factory
+				.Create<IBar>()
+				.Setup(b => b.Baz("hey"))
 				.Returns(
-					factory.Create<IBar>()
-					.Setup(b => b.Baz("hey"))
-					.Returns(
-						factory.Create<IBaz>()
-						.Setup(z => z.Value)
-						.Returns(5)
-						.AsMock()
-					)
+					factory.Create<IBaz>()
+					.Setup(z => z.Value)
+					.Returns(5)
 					.AsMock()
 				)
 				.AsMock();
