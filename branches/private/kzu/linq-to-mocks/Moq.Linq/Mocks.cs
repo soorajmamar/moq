@@ -226,22 +226,43 @@ namespace Moq.Linq
 				return this.Visit(expression);
 			}
 
+			protected override Expression VisitConstant(ConstantExpression c)
+			{
+				if (c.Type.IsGenericType &&
+					c.Type.GetGenericTypeDefinition() == (typeof(MockQueryable<>)))
+				{
+					var targetType = c.Type.GetGenericArguments()[0];
+					var createRealMethod = typeof(Mocks).GetMethod("CreateReal").MakeGenericMethod(targetType);
+					var createRealExpr = Expression.Call(null, createRealMethod);
+					var asQueryableMethod = typeof(Queryable).GetMethods()
+						.Where(mi => mi.Name == "AsQueryable" && mi.IsGenericMethodDefinition)
+						.Single()
+						.MakeGenericMethod(targetType);
+					var asQueryable = Expression.Call(null, asQueryableMethod, createRealExpr);
+
+					return asQueryable;
+				}
+					
+				return base.VisitConstant(c);
+			}
+
 			protected override Expression VisitMethodCall(MethodCallExpression m)
 			{
-				if (m.Method.DeclaringType == typeof(Queryable))
-				{
-					var queryMethod = m.Method.GetGenericMethodDefinition();
-					var enumerableMethod = typeof(Enumerable).GetMethods()
-						.Where(mi => mi.IsGenericMethod == queryMethod.IsGenericMethod &&
-							mi.Name == queryMethod.Name &&
-							mi.GetGenericArguments().Length == queryMethod.GetGenericArguments().Length &&
-							// Yes, this is not precise either :)
-							mi.GetParameters().Length == queryMethod.GetParameters().Length).First();
+				//if (m.Method.DeclaringType == typeof(Queryable))
+				//{
+				//    var queryMethod = m.Method.GetGenericMethodDefinition();
+				//    var enumerableMethod = typeof(Enumerable).GetMethods()
+				//        .Where(mi => mi.IsGenericMethod == queryMethod.IsGenericMethod &&
+				//            mi.Name == queryMethod.Name &&
+				//            mi.GetGenericArguments().Length == queryMethod.GetGenericArguments().Length &&
+				//            // Yes, this is not precise either :)
+				//            mi.GetParameters().Length == queryMethod.GetParameters().Length).First();
 
-					enumerableMethod = enumerableMethod.MakeGenericMethod(m.Method.GetGenericArguments());
+				//    enumerableMethod = enumerableMethod.MakeGenericMethod(m.Method.GetGenericArguments());
 
-					return Expression.Call(m.Object, enumerableMethod, m.Arguments.ToArray());
-				}
+				//    return Expression.Call(m.Object, enumerableMethod,
+				//        m.Arguments.Select(e => this.Visit(e)).ToArray());
+				//}
 
 				return base.VisitMethodCall(m);
 			}
