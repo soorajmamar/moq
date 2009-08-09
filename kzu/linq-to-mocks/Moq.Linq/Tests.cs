@@ -12,11 +12,26 @@ namespace Moq.Linq
 {
 	public static class AsMockExtensions
 	{
-		public static TMock AsMock<TMock>(this IReturnsResult<TMock> returns)
+		public static TMock AsMocked<TMock>(this IReturnsResult<TMock> returns)
+			where TMock : class
+		{
+			return returns.AsMock().Object;
+		}
+
+		public static Mock<TMock> AsMock<TMock>(this IReturnsResult<TMock> returns)
+			where TMock : class
 		{
 			// Make this properly supported.
-			return (TMock)((Mock)returns.GetType().GetField("mock", BindingFlags.Instance | BindingFlags.NonPublic)
-				.GetValue(returns)).Object;
+			return (Mock<TMock>)returns
+				.GetType()
+				.GetField("mock", BindingFlags.Instance | BindingFlags.NonPublic)
+				.GetValue(returns);
+		}
+
+		public static Mock<T> AsMock<T>(this T @object)
+			where T : class
+		{
+			return Mock.Get(@object);
 		}
 	}
 
@@ -34,13 +49,13 @@ namespace Moq.Linq
 				.Create<IBaz>()
 				.Setup(z => z.Value)
 				.Returns(5)
-				.AsMock();
+				.AsMocked();
 
 			var bar = factory
 				.Create<IBar>()
 				.Setup(b => b.Baz("hey"))
 				.Returns(baz)
-				.AsMock();
+				.AsMocked();
 
 			fooMock.Setup(f => f.Bar).Returns(bar);
 
@@ -52,9 +67,9 @@ namespace Moq.Linq
 					factory.Create<IBaz>()
 					.Setup(z => z.Value)
 					.Returns(5)
-					.AsMock()
+					.AsMocked()
 				)
-				.AsMock();
+				.AsMocked();
 
 			var value = foo.Bar.Baz("hey").Value;
 
