@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockDTE", "MockDTE\MockDTE.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moq.Linq", "Moq.Linq\Moq.Linq.csproj", "{F5412583-D6D4-4927-9ED3-B63305393D6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IQToolkit", "IQToolkit\IQToolkit.csproj", "{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,13 @@ Global
 		{F5412583-D6D4-4927-9ED3-B63305393D6A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5412583-D6D4-4927-9ED3-B63305393D6A}.Release|x86.ActiveCfg = Release|x86
 		{F5412583-D6D4-4927-9ED3-B63305393D6A}.Release|x86.Build.0 = Release|x86
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Debug|x86.ActiveCfg = Debug|x86
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Debug|x86.Build.0 = Debug|x86
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA62A7C-3B40-456F-A4B2-B3E19ED4080E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
