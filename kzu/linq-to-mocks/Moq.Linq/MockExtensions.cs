@@ -50,19 +50,5 @@ namespace Moq.Linq
 
 			return (Mock<TResult>)fluentMock;
 		}
-
-		//[EditorBrowsable(EditorBrowsableState.Never)]
-		//public static Mock<TResult> FluentMock<T, TResult>(T mocked, Expression<Func<T, TResult>> setup)
-		//    where T : class
-		//    where TResult : class
-		//{
-		//    return FluentMock<T, TResult>(Mock.Get(mocked), setup);
-		//}
-
-		//public static T With<T>(this T @object, Action<T> initialization)
-		//{
-		//    initialization(@object);
-		//    return @object;
-		//}
 	}
 }

@@ -13,8 +13,16 @@ using System.Collections;
 
 namespace Moq.Linq
 {
+	/// <summary>
+	/// Allows querying the universe of mocks for those that behave 
+	/// according to the query expression specification.
+	/// </summary>
 	public static class Mocks
 	{
+		/// <summary>
+		/// Creates a query for mocks of the given type.
+		/// </summary>
+		/// <typeparam name="T">The type of mocked object to query.</typeparam>
 		public static IQueryable<T> Query<T>()
 		{
 			return new MockQueryable<T>();
@@ -335,47 +343,6 @@ namespace Moq.Linq
 				}
 
 				return base.VisitConstant(c);
-			}
-
-			protected override Expression VisitMethodCall(MethodCallExpression m)
-			{
-				//if (m.Method.DeclaringType == typeof(Queryable))
-				//{
-				//    var queryMethod = m.Method.GetGenericMethodDefinition();
-				//    var enumerableMethod = typeof(Enumerable).GetMethods()
-				//        .Where(mi => mi.IsGenericMethod == queryMethod.IsGenericMethod &&
-				//            mi.Name == queryMethod.Name &&
-				//            mi.GetGenericArguments().Length == queryMethod.GetGenericArguments().Length &&
-				//            // Yes, this is not precise either :)
-				//            mi.GetParameters().Length == queryMethod.GetParameters().Length).First();
-
-				//    enumerableMethod = enumerableMethod.MakeGenericMethod(m.Method.GetGenericArguments());
-
-				//    return Expression.Call(m.Object, enumerableMethod,
-				//        m.Arguments.Select(e => this.Visit(e)).ToArray());
-				//}
-
-				return base.VisitMethodCall(m);
-			}
-
-			private bool AreEqual<T>(IEnumerable<T> first, IEnumerable<T> second)
-			{
-				return AreEqual(first, second, (obj1, obj2) => Object.Equals(obj1, obj2));
-			}
-
-			private bool AreEqual<T>(IEnumerable<T> first, IEnumerable<T> second, Func<T, T, bool> equalityComparer)
-			{
-				var firstEnum = first.GetEnumerator();
-				var secondEnum = second.GetEnumerator();
-
-				while (firstEnum.MoveNext() == secondEnum.MoveNext() == true)
-				{
-					if (!equalityComparer(firstEnum.Current, secondEnum.Current))
-						return false;
-				}
-
-				// Yes, this is not 100% precise. That's why it's a POC
-				return true;
 			}
 		}
 	}
