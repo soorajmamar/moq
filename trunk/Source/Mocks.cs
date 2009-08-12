@@ -10,12 +10,13 @@ using System.Reflection;
 using Moq.Language.Flow;
 using Moq.Language;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
-namespace Moq.Linq
+namespace Moq
 {
 	/// <summary>
 	/// Allows querying the universe of mocks for those that behave 
-	/// according to the query expression specification.
+	/// according to the query specification.
 	/// </summary>
 	public static class Mocks
 	{
@@ -36,6 +37,13 @@ namespace Moq.Linq
 			}
 		}
 
+		/// <summary>
+		/// Method that is turned into the actual call from .Query{T}, to 
+		/// transform the queryable query into a normal enumerable query.
+		/// This method should not be used by consumers.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IEnumerable<T> CreateReal<T>()
 			where T : class
@@ -44,13 +52,6 @@ namespace Moq.Linq
 			{
 				yield return new Mock<T>().Object;
 			}
-		}
-
-		public static bool Mock<T>(T source, Action<Mock<T>> setup)
-			where T : class
-		{
-			setup(Moq.Mock.Get(source));
-			return true;
 		}
 
 		class MockQueryProvider : QueryProvider
@@ -79,7 +80,7 @@ namespace Moq.Linq
 				replaced = MockSetupsReplacer.Accept(replaced);
 				replaced = QueryableToEnumerableReplacer.ReplaceAll(replaced);
 
-				var lambda = Expression.Lambda(typeof(Func<>).MakeGenericType(expression.Type), replaced);
+				var lambda = Expression.Lambda(typeof(Func<>).MakeGenericType(replaced.Type), replaced);
 				return lambda.Compile().DynamicInvoke(null);
 			}
 
@@ -172,7 +173,7 @@ namespace Moq.Linq
 					var notNullBinary = Expression.NotEqual(
 						Expression.Call(
 							FluentMockVisitor.Accept(b.Left),
-							// .Returns(solution)
+						// .Returns(solution)
 							returnsMethod,
 							b.Right
 						),
@@ -190,7 +191,7 @@ namespace Moq.Linq
 		class FluentMockVisitor : ExpressionVisitor
 		{
 			static readonly MethodInfo FluentMockGenericMethod = ((Func<Mock<string>, Expression<Func<string, string>>, Mock<string>>)
-				MockExtensions.FluentMock<string, string>).Method.GetGenericMethodDefinition();
+				QueryableMockExtensions.FluentMock<string, string>).Method.GetGenericMethodDefinition();
 			static readonly MethodInfo MockGetGenericMethod = ((Func<string, Mock<string>>)Moq.Mock.Get<string>)
 				.Method.GetGenericMethodDefinition();
 
@@ -240,6 +241,22 @@ namespace Moq.Linq
 
 			protected override Expression VisitMemberAccess(MemberExpression m)
 			{
+				// Translate differently member accesses over transparent
+				// compiler-generated types as they are typically the 
+				// anonymous types generated to build up the query expressions.
+				if (m.Expression.NodeType == ExpressionType.Parameter &&
+					m.Expression.Type.GetCustomAttribute<CompilerGeneratedAttribute>(false) != null)
+				{
+					var memberType = m.Member is FieldInfo ? 
+						((FieldInfo)m.Member).FieldType : 
+						((PropertyInfo)m.Member).PropertyType;
+
+					// Generate a Mock.Get over the entire member access rather.
+					// <anonymous_type>.foo => Mock.Get(<anonymous_type>.foo)
+					return Expression.Call(null,
+						MockGetGenericMethod.MakeGenericMethod(memberType), m);
+				}
+
 				// If member is not mock-able, actually, including being a sealed class, etc.?
 				if (m.Member is FieldInfo)
 					throw new NotSupportedException();
@@ -344,6 +361,57 @@ namespace Moq.Linq
 
 				return base.VisitConstant(c);
 			}
+		}
+	}
+
+	/// <summary>
+	/// Helper extensions that are used by the query translator.
+	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class QueryableMockExtensions
+	{
+		/// <summary>
+		/// Retrieves a fluent mock from the given setup expression.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static Mock<TResult> FluentMock<T, TResult>(this Mock<T> mock, Expression<Func<T, TResult>> setup)
+			where T : class
+			where TResult : class
+		{
+			MethodInfo info;
+
+			if (setup.Body.NodeType == ExpressionType.MemberAccess)
+			{
+				var property = ((MemberExpression)setup.Body).Member as PropertyInfo;
+				if (property == null)
+					throw new NotSupportedException("Fields are not supported");
+
+				info = property.GetGetMethod();
+			}
+			else if (setup.Body.NodeType == ExpressionType.Call)
+			{
+				info = ((MethodCallExpression)setup.Body).Method;
+			}
+			else
+			{
+				throw new NotSupportedException("Unsupported expression: " + setup.ToString());
+			}
+
+			if (!info.ReturnType.IsMockeable())
+				// We should have a type.ThrowIfNotMockeable() rather, so that we can reuse it.
+				throw new NotSupportedException();
+
+			Mock fluentMock;
+			if (!mock.InnerMocks.TryGetValue(info, out fluentMock))
+			{
+				fluentMock = ((IMocked)new MockDefaultValueProvider(mock).ProvideDefault(info)).Mock;
+			}
+
+			var result = (TResult)fluentMock.Object;
+
+			mock.Setup(setup).Returns(result);
+
+			return (Mock<TResult>)fluentMock;
 		}
 	}
 }
