@@ -86,12 +86,12 @@ namespace MockDTE
 							select dte)
 						   .First();
 
-			var mockDte = (from dte in Mocks.Create<DTE>()
-						   from solution in Mocks.Create<Solution>()
-						   from projects in Mocks.Create<Projects>()
-						   from project in Mocks.Create<Project>()
-						   from property in Mocks.Create<Property>()
-						   from properties in Mocks.Create<Properties>()
+			var mockDte = (from dte in Mocks.Query<DTE>()
+						   from solution in Mocks.Query<Solution>()
+						   from projects in Mocks.Query<Projects>()
+						   from project in Mocks.Query<Project>()
+						   from property in Mocks.Query<Property>()
+						   from properties in Mocks.Query<Properties>()
 						   where
 							dte.Solution == solution &&
 							project.Properties == properties &&
