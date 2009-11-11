@@ -14,6 +14,10 @@ Total downloads per version vary as they have been out for different spans of ti
 
 = What users say =
 
+"[http://twitter.com/adamjnelson/statuses/5511652081 Adam Nelson]: Why didn't anybody tell me about #moq? Finally a mocking framework that's easier than writing mocks myself"
+
+"[http://twitter.com/michaelsync/statuses/5384966739 Michael Sync]: Moq is very nice .. the more i use it, the more i love it. :)"
+
 "[http://twitter.com/agileguy/statuses/2080807004 Daniel Elliott]: @kzu For Moq; my most heartfelt thanks. < 20 seconds and I am writing expectations! #genius"
 
 "[http://twitter.com/NeilRobbins/statuses/1532901527 NeilRobbins]: @robcthegeek @Imaji @caseycharlton Tried Moq the other day on the train with no documentation and was happily doing AAA tests in minutes"
