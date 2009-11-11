@@ -6,9 +6,9 @@ Google Code downloads feature is quite bad for tracking project adoption and dow
 
 So here goes some aggregate data that you can build yourself from the [http://code.google.com/p/moq/downloads/list?can=1 full downloads list]:
 
-[http://spreadsheets.google.com/pub?key=pj988yaQwGXqZlqbzKD2zag&oid=2&output=image&nonsense=adoption.png]
+[https://spreadsheets.google.com/a/clariusconsulting.net/oimg?key=0At1Ajf9DbagxcGo5ODh5YVF3R1hxWmxxYnpLRDJ6YWc&oid=2&v=1257960734233 &output=image&nonsense=adoption.png]
 
-[http://spreadsheets.google.com/pub?key=pj988yaQwGXqZlqbzKD2zag&oid=3&output=image&nonsense=downloads.png]
+[https://spreadsheets.google.com/a/clariusconsulting.net/oimg?key=0At1Ajf9DbagxcGo5ODh5YVF3R1hxWmxxYnpLRDJ6YWc&oid=3&v=1257960880317&nonsense=downloads.png]
 
 Total downloads per version vary as they have been out for different spans of time, but the adoption is steady and fast-growing :). If you aggregate the entire 2.x wave, we've had more than 13k downloads! We hope v3.x wave will make even more strides.
 
