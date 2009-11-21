@@ -54,8 +54,8 @@ namespace Moq
 	/// </devdoc>
 	internal class MethodCallReturn : MethodCall
 	{
-		public MethodCallReturn(Mock mock, Expression originalExpression, MethodInfo method, params Expression[] arguments)
-			: base(mock, originalExpression, method, arguments)
+		public MethodCallReturn(Mock mock, Func<bool> condition, Expression originalExpression, MethodInfo method, params Expression[] arguments)
+			: base(mock, condition, originalExpression, method, arguments)
 		{
 		}
 
@@ -68,8 +68,8 @@ namespace Moq
 		Delegate valueDel = (Func<TResult>)(() => default(TResult));
 		Action<object[]> afterReturnCallback;
 
-		public MethodCallReturn(Mock mock, Expression originalExpression, MethodInfo method, params Expression[] arguments)
-			: base(mock, originalExpression, method, arguments)
+		public MethodCallReturn(Mock mock, Func<bool> condition, Expression originalExpression, MethodInfo method, params Expression[] arguments)
+			: base(mock, condition, originalExpression, method, arguments)
 		{
 			HasReturnValue = false;
 		}
@@ -110,12 +110,6 @@ namespace Moq
 		public new IReturnsThrows<TMock, TResult> Callback(Action callback)
 		{
 			base.Callback(callback);
-			return this;
-		}
-
-		public ISetupConditionResult<TMock, TResult> When(Func<bool> condition)
-		{
-			SetSetupCondition(condition);
 			return this;
 		}
 

@@ -46,7 +46,7 @@ namespace Moq.Language.Flow
 	/// Implements the fluent API.
 	/// </summary>
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public interface ISetup<TMock> : ICallback, ICallbackResult, IRaise<TMock>, IRaise, INever, IVerifies, ISetupCondition<TMock>, ISetupConditionResult<TMock>, IHideObjectMembers
+	public interface ISetup<TMock> : ICallback, ICallbackResult, IRaise<TMock>, IRaise, INever, IVerifies, IHideObjectMembers
 		where TMock : class
 	{
 	}
@@ -55,7 +55,7 @@ namespace Moq.Language.Flow
 	/// Implements the fluent API.
 	/// </summary>
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public interface ISetup<TMock, TResult> : ICallback<TMock, TResult>, IReturnsThrows<TMock, TResult>, INever, IVerifies, ISetupCondition<TMock, TResult>, ISetupConditionResult<TMock, TResult>, IHideObjectMembers
+	public interface ISetup<TMock, TResult> : ICallback<TMock, TResult>, IReturnsThrows<TMock, TResult>, INever, IVerifies, IHideObjectMembers
 		where TMock : class
 	{
 	}

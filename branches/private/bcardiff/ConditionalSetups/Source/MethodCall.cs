@@ -56,9 +56,9 @@ namespace Moq
 	internal partial class MethodCall<TMock> : MethodCall, ISetup<TMock>
 		where TMock : class
 	{
-		public MethodCall(Mock mock, Expression originalExpression, MethodInfo method,
+		public MethodCall(Mock mock, Func<bool> condition, Expression originalExpression, MethodInfo method,
 			params Expression[] arguments)
-			: base(mock, originalExpression, method, arguments)
+			: base(mock, condition, originalExpression, method, arguments)
 		{
 		}
 
@@ -76,18 +76,13 @@ namespace Moq
 		{
 			return RaisesImpl(eventExpression, args);
 		}
-
-		public ISetupConditionResult<TMock> When(Func<bool> condition)
-		{
-			SetSetupCondition(condition);
-			return this;
-		}
 	}
 
 	internal partial class MethodCall : IProxyCall, ICallbackResult, IVerifies, IThrowsResult
 	{
 		// Internal for AsMockExtensions
 		protected internal Mock mock;
+		protected Func<bool> condition;
 		protected MethodInfo method;
 		private Expression originalExpression;
 		private Exception exception;
@@ -112,9 +107,10 @@ namespace Moq
 		public bool Invoked { get; set; }
 		public Expression SetupExpression { get { return originalExpression; } }
 
-		public MethodCall(Mock mock, Expression originalExpression, MethodInfo method, params Expression[] arguments)
+		public MethodCall(Mock mock, Func<bool> condition, Expression originalExpression, MethodInfo method, params Expression[] arguments)
 		{
 			this.mock = mock;
+			this.condition = condition;
 			this.originalExpression = originalExpression;
 			this.method = method;
 
@@ -149,6 +145,10 @@ namespace Moq
 			}
 
 			SetFileInfo();
+		}
+
+		public bool IsConditional { 
+			get { return condition != null; } 
 		}
 
 		[Conditional("DESKTOP")]
@@ -204,6 +204,9 @@ namespace Moq
 
 		public virtual bool Matches(ICallContext call)
 		{
+			if (!condition())
+				return false;
+
 			var parameters = call.Method.GetParameters();
 			var args = new List<object>();
 			for (int i = 0; i < parameters.Length; i++)
@@ -415,11 +418,6 @@ namespace Moq
 			mockEventArgsParams = args;
 
 			return this;
-		}
-
-		protected void SetSetupCondition(Func<bool> condition)
-		{
-			
 		}
 
 		public override string ToString()

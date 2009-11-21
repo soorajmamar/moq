@@ -45,6 +45,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Moq.Language.Flow;
 using Moq.Proxy;
+using Moq.Language;
 
 namespace Moq
 {
@@ -149,13 +150,13 @@ namespace Moq
 		/// <include file='Mock.Generic.xdoc' path='docs/doc[@for="Mock{T}.Setup"]/*'/>
 		public ISetup<T> Setup(Expression<Action<T>> expression)
 		{
-			return Mock.Setup<T>(this, expression);
+			return Mock.Setup<T>(this, expression, null);
 		}
 
 		/// <include file='Mock.Generic.xdoc' path='docs/doc[@for="Mock{T}.Setup{TResult}"]/*'/>
 		public ISetup<T, TResult> Setup<TResult>(Expression<Func<T, TResult>> expression)
 		{
-			return Mock.Setup(this, expression);
+			return Mock.Setup(this, expression, null);
 		}
 
 		/// <include file='Mock.Generic.xdoc' path='docs/doc[@for="Mock{T}.SetupGet"]/*'/>
@@ -200,6 +201,14 @@ namespace Moq
 		}
 #endif
 
+		#endregion
+
+		#region When
+		/// <include file='Mock.Generic.xdoc' path='docs/doc[@for="Mock{T}.When"]/*'/>
+		public ISetupConditionResult<T> When(Func<bool> condition)
+		{
+			return new ConditionalContext<T>(this, condition);
+		}
 		#endregion
 
 		#region Verify

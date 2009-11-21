@@ -46,6 +46,7 @@ namespace Moq
 {
 	internal interface IProxyCall
 	{
+		bool IsConditional { get; }
 		bool Matches(ICallContext call);
 		void Execute(ICallContext call);
 		void SetOutParameters(ICallContext call);
