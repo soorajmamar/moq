@@ -10,12 +10,12 @@ namespace Moq.Tests
 		{
 			var m = new Mock<IFoo>();
 
-			m.Setup(x => x.M1())
-				.When(() => true)
+			m.When(() => true)
+				.Setup(x => x.M1())				
 				.Returns("bar");
 
-			m.Setup(x => x.M2())
-				.When(() => true);
+			m.When(() => true)
+				.Setup(x => x.M2());
 		}
 
 		[Fact]
@@ -25,12 +25,14 @@ namespace Moq.Tests
 
 			bool first = true;
 
-			m.Setup(x => x.M1()).When(() => first).Returns("bar");
-			m.Setup(x => x.M1()).When(() => !first).Returns("no bar");
+			m.When(() => first).Setup(x => x.M1()).Returns("bar");
+			m.When(() => !first).Setup(x => x.M1()).Returns("no bar");
 
 			Assert.Equal("bar", m.Object.M1());
 			first = false;
 			Assert.Equal("no bar", m.Object.M1());
+			first = true;
+			Assert.Equal("bar", m.Object.M1());
 		}
 
 		public interface IFoo
