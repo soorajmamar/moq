@@ -257,6 +257,7 @@
     <Compile Include="Proxy\CastleProxyFactory.cs" />
     <Compile Include="Proxy\ICallInterceptor.cs" />
     <Compile Include="Proxy\IProxyFactory.cs" />
+    <Compile Include="ReturnSequenceHelper.cs" />
     <Compile Include="SetterMethodCall.cs" />
     <Compile Include="Sub\StubExtensions.cs" />
     <Compile Include="Times.cs" />
