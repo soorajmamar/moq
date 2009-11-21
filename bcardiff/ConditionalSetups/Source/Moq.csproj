@@ -252,6 +252,7 @@
     <Compile Include="MockedEvent.Generic.cs" />
     <Compile Include="MockExtensions.cs" />
     <Compile Include="Mocks.cs" />
+    <Compile Include="MockSequence.cs" />
     <Compile Include="PexProtector.cs" />
     <Compile Include="Proxy\ICallContext.cs" />
     <Compile Include="Proxy\CastleProxyFactory.cs" />

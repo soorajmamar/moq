@@ -204,7 +204,7 @@ namespace Moq
 
 		public virtual bool Matches(ICallContext call)
 		{
-			if (!condition())
+			if (condition != null && !condition())
 				return false;
 
 			var parameters = call.Method.GetParameters();
