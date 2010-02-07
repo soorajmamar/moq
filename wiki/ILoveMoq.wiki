@@ -14,6 +14,8 @@ Total downloads per version vary as they have been out for different spans of ti
 
 = What users say =
 
+"[http://twitter.com/lprichar/statuses/8543942600 Lee Richardson]: Moq has such nice error messages, they tell you exactly what to do and even include copy and pasteable code samples. I'm a convert."
+
 "[http://twitter.com/adamjnelson/statuses/5511652081 Adam Nelson]: Why didn't anybody tell me about #moq? Finally a mocking framework that's easier than writing mocks myself"
 
 "[http://twitter.com/michaelsync/statuses/5384966739 Michael Sync]: Moq is very nice .. the more i use it, the more i love it. :)"
