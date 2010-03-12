@@ -3,14 +3,22 @@
 
 RewriteEngine on
 
-RewriteCond %{HTTP_HOST} ^mockframeworks\.com$ [NC]
-RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=301]
+RewriteCond %{HTTPS} (on)?
+RewriteCond %{HTTP:Host} ^(?!www\.)(.+)$ [NC]
+RewriteCond %{REQUEST_URI} (.+)
+RewriteRule .? http(?%1s)\://www\.%2%3$1 [L,R=302]
 
-RewriteCond %{HTTP_HOST} ^mockframeworks\.net$ [NC]
-RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=301]
+RewriteCond %{HTTP_HOST} ^www\.moq\.me$ [NC]
+RewriteRule ^get$ http\://code\.google\.com/p/moq/downloads/list [L,R=302]
+
+RewriteCond %{HTTP_HOST} ^www\.moq\.me$ [NC]
+RewriteRule ^facebook$ http://www.facebook.com/pages/moq-community/356337748995 [L,R=301]
+
+RewriteCond %{HTTP_HOST} ^www\.moq\.me$ [NC]
+RewriteRule (.*)$ http://code.google.com/p/moq/$1 [L,R=302]
 
 RewriteCond %{HTTP_HOST} ^www\.mockframeworks\.net$ [NC]
-RewriteRule ^(.*)$ http://www.mockframeworks.com/$1 [L,R=301]
+RewriteRule ^(.*)$ http\://www.mockframeworks.com/$1 [L,R=301]
 
-RewriteRule ^([^\.]+)$ $1.ashx  [R=302,L,NC]
+RewriteRule ^([^\.]+)$ $1.ashx  [R=301,L,NC]
 RewriteRule ^(.*)default.aspx$ $1  [R=301,L,NC]
