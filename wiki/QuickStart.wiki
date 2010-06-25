@@ -7,7 +7,7 @@ Moq is intended to be simple to use, strong typed (no magic strings!, and theref
 
 {{{
 var mock = new Mock<IFoo>();
-mock.Setup(foo => foo.Execute("ping")).Returns(true);
+mock.Setup(foo => foo.DoSomething("ping")).Returns(true);
 
 
 // out arguments
@@ -23,28 +23,28 @@ mock.Setup(foo => foo.Submit(ref instance)).Returns(true);
 
 
 // access invocation arguments when returning a value
-mock.Setup(x => x.Execute(It.IsAny<string>()))
+mock.Setup(x => x.DoSomething(It.IsAny<string>()))
 		.Returns((string s) => s.ToLower());
 // Multiple parameters overloads available
 
 
 // throwing when invoked
-mock.Setup(foo => foo.Execute("reset")).Throws<InvalidOperationException>();
-mock.Setup(foo => foo.Execute("")).Throws(new ArgumentException("command");
+mock.Setup(foo => foo.DoSomething("reset")).Throws<InvalidOperationException>();
+mock.Setup(foo => foo.DoSomething("")).Throws(new ArgumentException("command");
 
 
 // lazy evaluating return value
-mock.Setup(foo => foo.Count()).Returns(() => count);
+mock.Setup(foo => foo.GetCount()).Returns(() => count);
 
 
 // returning different values on each invocation
 var mock = new Mock<IFoo>();
 var calls = 0;
-mock.Setup(foo => foo.Execute("ping"))
+mock.Setup(foo => foo.GetCountThing())
     .Returns(() => calls)
     .Callback(() => calls++);
 // returns 0 on first invocation, 1 on the next, and so on
-Console.WriteLine(mock.Object.Execute("ping"));
+Console.WriteLine(mock.Object.GetCountThing());
 
 }}}
 
@@ -52,7 +52,7 @@ Console.WriteLine(mock.Object.Execute("ping"));
 
 {{{
 // any value
-mock.Setup(foo => foo.Execute(It.IsAny<string>())).Returns(true);
+mock.Setup(foo => foo.DoSomething(It.IsAny<string>())).Returns(true);
 
 
 // matching Func<int>, lazy evaluated
@@ -64,7 +64,7 @@ mock.Setup(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive))).Returns(tr
 
 
 // matching regex
-mock.Setup(x => x.Execute(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
+mock.Setup(x => x.DoSomething(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns("foo");
 }}}
 
 == Properties ==
