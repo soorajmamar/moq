@@ -1,10 +1,11 @@
-msbuild ..\trunk\Source\Moq.csproj /p:Configuration=Release
+msbuild ..\trunk\Source\Moq.csproj /t:Rebuild /p:Configuration=Release /p:TargetFrameworkVersion=v3.5
+xcopy ..\trunk\Source\bin\Release\*.* ..\drops\Current\NET35 /Y /I
+msbuild ..\trunk\Source.Silverlight\Moq.Silverlight.csproj /t:Rebuild /p:Configuration=Release
+xcopy ..\trunk\Source.Silverlight\bin\Release\*.* ..\drops\Current\Silverlight4 /Y /I
+msbuild ..\trunk\Source\Moq.csproj /t:Rebuild /p:Configuration=Release
+xcopy ..\trunk\Source\bin\Release\*.* ..\drops\Current\NET40 /Y /I
 
-xcopy ..\trunk\Source\bin\Release\Moq*.* ..\drops\Current\ /Y
 xcopy ..\trunk\License.txt "..\drops\Current\" /Y /I
-pushd ..\drops\Current\
-ren License.txt "Moq License.txt" 
-popd
-"Sandcastle Help File Builder\SandcastleBuilderConsole.exe" ..\trunk\Moq.shfb -include=Moq,MockBehavior -exclude=Moq,MockBehavior,Normal -exclude=Moq,MockBehavior,Relaxed -exclude=Moq,IMocked
+msbuild ..\trunk\Moq.shfbproj
 
 xcopy Help\Moq.chm ..\drops\Current\ /Y 
