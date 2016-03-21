@@ -1,0 +1,1 @@
+# Moved to [GitHub](https://github.com/Moq/moq4) #
